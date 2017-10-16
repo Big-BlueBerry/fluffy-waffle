@@ -93,5 +93,11 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\fluffy-waffle-core\fluffy-waffle-core.csproj">
+      <Project>{9845394e-a768-4507-adf1-74dca525d3c1}</Project>
+      <Name>fluffy-waffle-core</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -12,17 +12,24 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using fluffy_waffle_core;
 
 namespace fluffy_waffle
 {
-    /// <summary>
-    /// MainWindow.xaml에 대한 상호 작용 논리
-    /// </summary>
     public partial class MainWindow : Window
     {
+        private List<IDrawable> _drawables = new List<IDrawable>();
+
         public MainWindow()
         {
             InitializeComponent();
+            AddDrawable(new Neuron(new Vector(100, 100)));
+        }
+
+        void AddDrawable(IDrawable item)
+        {
+            _drawables.Add(item);
+            ShapeCanvas.Children.Add(item.Control);
         }
     }
 }
