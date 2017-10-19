@@ -21,13 +21,14 @@ namespace fluffy_waffle
     {
         private List<IDrawable> _drawables = new List<IDrawable>();
         List<Neuron> Neurons;
-        private List<Neuron> clicked;
+        private Neuron _clicked = null;
+        private Vector _temp;
 
         public MainWindow()
         {   
             InitializeComponent();
 
-            clicked = new List<Neuron>();
+            _temp = new Vector();
             Neurons = new List<Neuron>();
 
             Neurons.Add(new Neuron(new Vector(100, 100)));
@@ -47,15 +48,19 @@ namespace fluffy_waffle
             var neuron = (sender as Shape).Tag as Neuron;
             if (neuron != null)
             {
-                if (clicked.Count == 0)
+                if (_clicked == null)
                 {
-                    clicked.Add(neuron);
+                    _clicked = neuron;
+                    _temp = neuron.Position;
                 }
-                else if (clicked[0] != neuron)
+                else if (_clicked != neuron && !_clicked.IsNeuronInBranch(neuron))
                 {
-                    clicked[0].AppendOutputBranch(neuron);
-                    neuron.AppendInputBranch(clicked[0]);
-                    clicked.Clear();
+                    // if two neurons were faired set output and input branch
+                    _clicked.AppendOutputBranch(neuron);
+                    neuron.AppendInputBranch(_clicked);
+
+                    DrawLine(neuron);
+                    _clicked = null;
                 }
             }
             Debug.WriteLine($"어엉어 :{neuron.Value}\n");
@@ -67,6 +72,20 @@ namespace fluffy_waffle
             var neuron = (sender as Shape).Tag as Neuron;
             neuron.Propagation();
             Debug.WriteLine($"하읏 :{neuron.Value}\n");
+        }
+
+        private void DrawLine(Neuron neuron)
+        {
+            Line line = new Line();
+            line.X1 = _temp.X;
+            line.Y1 = _temp.Y;
+            line.X2 = neuron.Position.X;
+            line.Y2 = neuron.Position.Y;
+            line.Stroke = Brushes.HotPink;
+            ShapeCanvas.Children.Add(line);
+
+            _clicked.DrawingBranch.Add(line);
+            neuron.DrawingBranch.Add(line);
         }
 
         void AddDrawable(IDrawable item)

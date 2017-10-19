@@ -12,6 +12,7 @@ namespace fluffy_waffle_core
     {
         public List<Neuron> InputBranch;
         public List<(Neuron neuron, double weight)> OutputBranch;
+        public List<Line> DrawingBranch;
 
         private Ellipse _shape;
         public UIElement Control => _shape;
@@ -22,6 +23,8 @@ namespace fluffy_waffle_core
         {
             InputBranch = new List<Neuron>();
             OutputBranch = new List<(Neuron neuron, double weight)>();
+            DrawingBranch = new List<Line>();
+
             // 초기 세팅, Value 는 test용
             Position = pos;
             Value = 1;
@@ -57,6 +60,11 @@ namespace fluffy_waffle_core
             {
                 neuron.Value += this.Value * weight;
             }
+        }
+
+        public bool IsNeuronInBranch(Neuron neuron)
+        {
+            return InputBranch.Contains(neuron) || OutputBranch.Any((t) => t.neuron == neuron);
         }
     }
 }
