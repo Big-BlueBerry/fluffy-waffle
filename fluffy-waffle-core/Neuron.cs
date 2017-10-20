@@ -19,6 +19,9 @@ namespace fluffy_waffle_core
         public Vector Position { get; set; }
         public Double Value { get; set; }
 
+        public bool IsNeuronClicked;
+        public Point NeuronFirstPosition;
+
         public Neuron(Vector pos)
         {
             InputBranch = new List<Neuron>();

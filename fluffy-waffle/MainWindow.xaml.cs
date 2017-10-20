@@ -23,10 +23,13 @@ namespace fluffy_waffle
         List<Neuron> Neurons;
         private Neuron _clicked = null;
         private Vector _temp;
+        private bool _isAddingMode = false;
 
         public MainWindow()
         {   
             InitializeComponent();
+
+            AddNeuronBtn.Click += AddNeuronBtn_Click;
 
             _temp = new Vector();
             Neurons = new List<Neuron>();
@@ -39,6 +42,21 @@ namespace fluffy_waffle
                 neuron.Control.MouseLeftButtonDown += Control_MouseLeftButtonDown;
                 neuron.Control.MouseRightButtonDown += Control_MouseRightButtonDown;
                 AddDrawable(neuron);
+            }
+        }
+
+        private void AddNeuronBtn_Click(object sender, RoutedEventArgs e)
+        {
+            _isAddingMode = !_isAddingMode;
+            if (_isAddingMode)
+            {
+                AddNeuronBtn.Content = "Cancel";
+                AddNeuronBtn.Background = Brushes.LightPink;
+            }
+            else
+            {
+                AddNeuronBtn.Content = "Add";
+                AddNeuronBtn.Background = Brushes.White;
             }
         }
 
@@ -74,6 +92,7 @@ namespace fluffy_waffle
             Debug.WriteLine($"하읏 :{neuron.Value}\n");
         }
 
+        // 두 Neuron에 선 추가
         private void DrawLine(Neuron neuron)
         {
             Line line = new Line();
@@ -90,8 +109,47 @@ namespace fluffy_waffle
 
         void AddDrawable(IDrawable item)
         {
+            // 드래그 이벤트 추가
+            if (item is Neuron)
+            {
+                var neu = item as Neuron;
+                var shape = neu.Control as Ellipse;
+                shape.MouseLeftButtonDown += (s, e) =>
+                {
+                    neu.NeuronFirstPosition = e.GetPosition(shape);
+                    neu.IsNeuronClicked = true;
+                };
+                shape.MouseLeftButtonUp += (s, e) => neu.IsNeuronClicked = false;
+                shape.MouseLeave += (s, e) =>
+                {
+                    if (neu.IsNeuronClicked) neu.IsNeuronClicked = false;
+                };
+                shape.MouseMove += (s, e) =>
+                {
+                    if (!neu.IsNeuronClicked) return;
+                    var delta = e.GetPosition(shape) - neu.NeuronFirstPosition;
+                    shape.Margin = new Thickness(shape.Margin.Left + delta.X,
+                        shape.Margin.Top + delta.Y,
+                        shape.Margin.Right + delta.X,
+                        shape.Margin.Bottom + delta.Y);
+
+                    neu.Position = new Vector(e.GetPosition(shape).X, e.GetPosition(shape).Y);
+                };
+            }
+
             _drawables.Add(item);
             ShapeCanvas.Children.Add(item.Control);
-        }  
+        }
+
+        private void ShapeCanvas_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            if (_isAddingMode)
+            {
+                var pos = e.GetPosition(ShapeCanvas);
+                var neuron = new Neuron(new Vector(pos.X, pos.Y));
+                Neurons.Add(neuron);
+                AddDrawable(neuron);
+            }
+        }
     }
 }
