@@ -30,8 +30,7 @@ namespace fluffy_waffle
             InitializeComponent();
 
             AddNeuronBtn.Click += AddNeuronBtn_Click;
-
-            _temp = new Vector();
+            
             Neurons = new List<Neuron>();
 
             Neurons.Add(new Neuron(new Vector(100, 100)));
@@ -69,15 +68,13 @@ namespace fluffy_waffle
                 if (_clicked == null)
                 {
                     _clicked = neuron;
-                    _temp = neuron.Position;
                 }
                 else if (_clicked != neuron && !_clicked.IsNeuronInBranch(neuron))
                 {
-                    // if two neurons were faired set output and input branch
-                    _clicked.AppendOutputBranch(neuron);
-                    neuron.AppendInputBranch(_clicked);
+                    Line line = DrawLine(_clicked, neuron);
+                    _clicked.AppendOutputBranch(neuron, line);
+                    neuron.AppendInputBranch(_clicked, line);
 
-                    DrawLine(neuron);
                     _clicked = null;
                 }
             }
@@ -93,18 +90,17 @@ namespace fluffy_waffle
         }
 
         // 두 Neuron에 선 추가
-        private void DrawLine(Neuron neuron)
+        private Line DrawLine(Neuron start, Neuron end)
         {
             Line line = new Line();
-            line.X1 = _temp.X;
-            line.Y1 = _temp.Y;
-            line.X2 = neuron.Position.X;
-            line.Y2 = neuron.Position.Y;
+            line.X1 = start.Position.X;
+            line.Y1 = start.Position.Y;
+            line.X2 = end.Position.X;
+            line.Y2 = end.Position.Y;
+
             line.Stroke = Brushes.HotPink;
             ShapeCanvas.Children.Add(line);
-
-            _clicked.DrawingBranch.Add(line);
-            neuron.DrawingBranch.Add(line);
+            return line;
         }
 
         void AddDrawable(IDrawable item)
@@ -133,7 +129,21 @@ namespace fluffy_waffle
                         shape.Margin.Right + delta.X,
                         shape.Margin.Bottom + delta.Y);
 
-                    neu.Position = new Vector(e.GetPosition(shape).X, e.GetPosition(shape).Y);
+                    Point newPoint = new Point();
+                    newPoint.X = delta.X;
+                    newPoint.Y = delta.Y;
+
+                    neu.Position += (Vector)newPoint;
+                    foreach((Neuron neron, Line line) in neu.InputBranch)
+                    {
+                        line.X2 = neu.Position.X;
+                        line.Y2 = neu.Position.Y;
+                    }
+                    foreach ((Neuron neron, double weight, Line line) in neu.OutputBranch)
+                    {
+                        line.X1 = neu.Position.X;
+                        line.Y1 = neu.Position.Y;
+                    }
                 };
             }
 

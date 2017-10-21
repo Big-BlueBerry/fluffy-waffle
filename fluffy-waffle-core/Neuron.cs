@@ -10,8 +10,8 @@ namespace fluffy_waffle_core
 {
     public class Neuron : IDrawable
     {
-        public List<Neuron> InputBranch;
-        public List<(Neuron neuron, double weight)> OutputBranch;
+        public List<(Neuron neuron, Line line)> InputBranch;
+        public List<(Neuron neuron, double weight, Line line)> OutputBranch;
         public List<Line> DrawingBranch;
 
         private Ellipse _shape;
@@ -24,8 +24,8 @@ namespace fluffy_waffle_core
 
         public Neuron(Vector pos)
         {
-            InputBranch = new List<Neuron>();
-            OutputBranch = new List<(Neuron neuron, double weight)>();
+            InputBranch = new List<(Neuron neuron, Line line)>();
+            OutputBranch = new List<(Neuron neuron, double weight, Line line)>();
             DrawingBranch = new List<Line>();
 
             // 초기 세팅, Value 는 test용
@@ -39,27 +39,27 @@ namespace fluffy_waffle_core
         }
 
         // 다른뉴런에서 클릭 됐을 때 추가
-        public void AppendInputBranch(Neuron neuron)
+        public void AppendInputBranch(Neuron neuron, Line line)
         {
-            this.InputBranch.Add(neuron);
+            this.InputBranch.Add((neuron, line));
 
         }
         // 뉴런에서 다른뉴런으로 클릭 했을 때 추가
-        public void AppendOutputBranch(Neuron neuron)
+        public void AppendOutputBranch(Neuron neuron, Line line)
         {
             double weight = new Random().NextDouble();
-            this.OutputBranch.Add((neuron, weight));          
+            this.OutputBranch.Add((neuron, weight, line));          
         }
 
         // 각 Branch에 값을 전달
         public void Propagation()
         {
-            foreach (Neuron neuron in this.InputBranch)
+            foreach ((Neuron neuron, Line line) in this.InputBranch)
             {
                 neuron.Propagation();
             }
 
-            foreach ((Neuron neuron, double weight) in this.OutputBranch)
+            foreach ((Neuron neuron, double weight, Line line) in this.OutputBranch)
             {
                 neuron.Value += this.Value * weight;
             }
@@ -67,7 +67,8 @@ namespace fluffy_waffle_core
 
         public bool IsNeuronInBranch(Neuron neuron)
         {
-            return InputBranch.Contains(neuron) || OutputBranch.Any((t) => t.neuron == neuron);
+            return InputBranch.Any((t) => t.neuron == neuron) || 
+                   OutputBranch.Any((t) => t.neuron == neuron);
         }
     }
 }
