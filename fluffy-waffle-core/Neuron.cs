@@ -27,6 +27,7 @@ namespace fluffy_waffle_core
         public Point NeuronFirstPosition;
 
         private Timer _timer;
+        private delegate void ThisDelegate();            
 
         public Neuron(Vector pos)
         {
@@ -74,6 +75,9 @@ namespace fluffy_waffle_core
             {   
                 // weight가 변경되는 부분
                 neuron.Value += this.Value * weight;
+
+                //COlor Animation
+                line.Stroke = Brushes.Aqua;
             }
         }
 
@@ -82,8 +86,12 @@ namespace fluffy_waffle_core
             _timer.Stop();
 
             foreach ((Neuron neuron, double weight, Line line) in this.OutputBranch)
+            {
                 neuron.Propagation();
-            
+
+                line.Dispatcher.Invoke(() => { line.Stroke = Brushes.HotPink; });
+            }
+
         }
 
         public bool IsNeuronInputBranch(Neuron neuron)
