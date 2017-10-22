@@ -22,7 +22,6 @@ namespace fluffy_waffle
         private List<IDrawable> _drawables = new List<IDrawable>();
         List<Neuron> Neurons;
         private Neuron _clicked = null;
-        private Vector _temp;
         private bool _isAddingMode = false;
 
         public MainWindow()
@@ -58,8 +57,7 @@ namespace fluffy_waffle
                 AddNeuronBtn.Background = Brushes.White;
             }
         }
-
-        // 첫 클릭 => 두번째 클릭으로 branch 생성
+        
         private void Control_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             var neuron = (sender as Shape).Tag as Neuron;
@@ -90,8 +88,7 @@ namespace fluffy_waffle
             neuron.Propagation();
             Debug.WriteLine($"하읏 :{neuron.Value}\n");
         }
-
-        // 두 Neuron에 선 추가
+        
         private Line DrawLine(Neuron start, Neuron end)
         {
             Line line = new Line();

@@ -1,14 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Shapes;
 using System.Timers;
-using System.Windows.Threading;
-using System.Windows.Media.Animation;
 
 namespace fluffy_waffle_core
 {
@@ -26,8 +22,7 @@ namespace fluffy_waffle_core
         public bool IsNeuronClicked;
         public Point NeuronFirstPosition;
 
-        private Timer _timer;
-        private delegate void ThisDelegate();            
+        private Timer _timer;        
 
         public Neuron(Vector pos)
         {
@@ -49,19 +44,16 @@ namespace fluffy_waffle_core
 
         private void InitTimer()
         {
-            _timer = new System.Timers.Timer();
+            _timer = new Timer();
             _timer.Interval = 1000;
             _timer.Elapsed += PropagationToOutputBranches;
         }
 
-        // 다른뉴런에서 클릭 됐을 때 추가
         public void AppendInputBranch(Neuron neuron, Line line)
         {
             this.InputBranch.Add((neuron, line));
-
         }
-
-        // 뉴런에서 다른뉴런으로 클릭 했을 때 추가
+        
         public void AppendOutputBranch(Neuron neuron, Line line)
         {
             double weight = new Random().NextDouble();
@@ -73,25 +65,20 @@ namespace fluffy_waffle_core
             this._timer.Start();
             foreach ((Neuron neuron, double weight, Line line) in this.OutputBranch)
             {   
-                // weight가 변경되는 부분
                 neuron.Value += this.Value * weight;
-
-                //COlor Animation
-                line.Stroke = Brushes.Aqua;
+                line.Dispatcher.Invoke(() => { line.Stroke = Brushes.Aqua; });
             }
         }
 
         private void PropagationToOutputBranches(object sender, EventArgs e)
         {
             _timer.Stop();
-
+            
             foreach ((Neuron neuron, double weight, Line line) in this.OutputBranch)
             {
                 neuron.Propagation();
-
                 line.Dispatcher.Invoke(() => { line.Stroke = Brushes.HotPink; });
             }
-
         }
 
         public bool IsNeuronInputBranch(Neuron neuron)
