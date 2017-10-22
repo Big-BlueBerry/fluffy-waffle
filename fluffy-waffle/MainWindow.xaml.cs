@@ -69,7 +69,9 @@ namespace fluffy_waffle
                 {
                     _clicked = neuron;
                 }
-                else if (_clicked != neuron && !_clicked.IsNeuronInBranch(neuron))
+                else if (_clicked != neuron && 
+                    !_clicked.IsNeuronOutputBranch(neuron) && 
+                    !neuron.IsNeuronInputBranch(_clicked))
                 {
                     Line line = DrawLine(_clicked, neuron);
                     _clicked.AppendOutputBranch(neuron, line);
@@ -157,6 +159,8 @@ namespace fluffy_waffle
             {
                 var pos = e.GetPosition(ShapeCanvas);
                 var neuron = new Neuron(new Vector(pos.X, pos.Y));
+                neuron.Control.MouseLeftButtonDown += Control_MouseLeftButtonDown;
+                neuron.Control.MouseRightButtonDown += Control_MouseRightButtonDown;
                 Neurons.Add(neuron);
                 AddDrawable(neuron);
             }
