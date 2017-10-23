@@ -10,9 +10,8 @@ namespace fluffy_waffle_core
 {
     public class Neuron : IDrawable
     {
-        public List<(Neuron neuron, Line line)> InputBranch;
-        public List<(Neuron neuron, double weight, Line line)> OutputBranch;
-        public List<Line> DrawingBranch;
+        public List<(Neuron neuron, Branch branch)> InputBranch;
+        public List<(Neuron neuron, Branch branch)> OutputBranch;
 
         private Ellipse _shape;
         public UIElement Control => _shape;
@@ -26,9 +25,8 @@ namespace fluffy_waffle_core
 
         public Neuron(Vector pos)
         {
-            InputBranch = new List<(Neuron neuron, Line line)>();
-            OutputBranch = new List<(Neuron neuron, double weight, Line line)>();
-            DrawingBranch = new List<Line>();
+            InputBranch = new List<(Neuron neuron, Branch branch)>();
+            OutputBranch = new List<(Neuron neuron, Branch branch)>();
 
             // 초기 세팅, Value 는 test용
             Position = pos;
@@ -49,24 +47,23 @@ namespace fluffy_waffle_core
             _timer.Elapsed += PropagationToOutputBranches;
         }
 
-        public void AppendInputBranch(Neuron neuron, Line line)
+        public void AppendInputBranch(Neuron neuron, Branch branch)
         {
-            this.InputBranch.Add((neuron, line));
+            this.InputBranch.Add((neuron, branch));
         }
         
-        public void AppendOutputBranch(Neuron neuron, Line line)
+        public void AppendOutputBranch(Neuron neuron, Branch branch)
         {
-            double weight = new Random().NextDouble();
-            this.OutputBranch.Add((neuron, weight, line));          
+            this.OutputBranch.Add((neuron, branch));          
         }
 
         public void Propagation()
         {
             this._timer.Start();
-            foreach ((Neuron neuron, double weight, Line line) in this.OutputBranch)
+            foreach ((Neuron neuron, Branch branch) in this.OutputBranch)
             {   
-                neuron.Value += this.Value * weight;
-                line.Dispatcher.Invoke(() => { line.Stroke = Brushes.Aqua; });
+                neuron.Value += this.Value * branch.Weight;
+                branch.SetBranchColor(Brushes.Aqua);
             }
         }
 
@@ -74,17 +71,16 @@ namespace fluffy_waffle_core
         {
             _timer.Stop();
             
-            foreach ((Neuron neuron, double weight, Line line) in this.OutputBranch)
+            foreach ((Neuron neuron, Branch branch) in this.OutputBranch)
             {
                 neuron.Propagation();
-                line.Dispatcher.Invoke(() => { line.Stroke = Brushes.HotPink; });
+                branch.SetBranchColor(Brushes.HotPink);
             }
         }
 
         public bool IsNeuronInputBranch(Neuron neuron)
         {
             return InputBranch.Any((t) => t.neuron == neuron);
-                   
         }
 
         public bool IsNeuronOutputBranch(Neuron neuron)

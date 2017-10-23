@@ -71,9 +71,10 @@ namespace fluffy_waffle
                     !_clicked.IsNeuronOutputBranch(neuron) && 
                     !neuron.IsNeuronInputBranch(_clicked))
                 {
-                    Line line = DrawLine(_clicked, neuron);
-                    _clicked.AppendOutputBranch(neuron, line);
-                    neuron.AppendInputBranch(_clicked, line);
+                    Branch branch = new Branch(_clicked.Position, neuron.Position);
+                    DrawBranch(branch);
+                    _clicked.AppendOutputBranch(neuron, branch);
+                    neuron.AppendInputBranch(_clicked, branch);
 
                     _clicked = null;
                 }
@@ -89,17 +90,10 @@ namespace fluffy_waffle
             Debug.WriteLine($"하읏 :{neuron.Value}\n");
         }
         
-        private Line DrawLine(Neuron start, Neuron end)
+        private void DrawBranch(Branch branch)
         {
-            Line line = new Line();
-            line.X1 = start.Position.X;
-            line.Y1 = start.Position.Y;
-            line.X2 = end.Position.X;
-            line.Y2 = end.Position.Y;
-
-            line.Stroke = Brushes.HotPink;
-            ShapeCanvas.Children.Add(line);
-            return line;
+            ShapeCanvas.Children.Add(branch.Line);
+            ShapeCanvas.Children.Add(branch.Text);
         }
 
         void AddDrawable(IDrawable item)
@@ -107,22 +101,22 @@ namespace fluffy_waffle
             // 드래그 이벤트 추가
             if (item is Neuron)
             {
-                var neu = item as Neuron;
-                var shape = neu.Control as Ellipse;
+                var neuron = item as Neuron;
+                var shape = neuron.Control as Ellipse;
                 shape.MouseLeftButtonDown += (s, e) =>
                 {
-                    neu.NeuronFirstPosition = e.GetPosition(shape);
-                    neu.IsNeuronClicked = true;
+                    neuron.NeuronFirstPosition = e.GetPosition(shape);
+                    neuron.IsNeuronClicked = true;
                 };
-                shape.MouseLeftButtonUp += (s, e) => neu.IsNeuronClicked = false;
+                shape.MouseLeftButtonUp += (s, e) => neuron.IsNeuronClicked = false;
                 shape.MouseLeave += (s, e) =>
                 {
-                    if (neu.IsNeuronClicked) neu.IsNeuronClicked = false;
+                    if (neuron.IsNeuronClicked) neuron.IsNeuronClicked = false;
                 };
                 shape.MouseMove += (s, e) =>
                 {
-                    if (!neu.IsNeuronClicked) return;
-                    var delta = e.GetPosition(shape) - neu.NeuronFirstPosition;
+                    if (!neuron.IsNeuronClicked) return;
+                    var delta = e.GetPosition(shape) - neuron.NeuronFirstPosition;
                     shape.Margin = new Thickness(shape.Margin.Left + delta.X,
                         shape.Margin.Top + delta.Y,
                         shape.Margin.Right + delta.X,
@@ -132,16 +126,14 @@ namespace fluffy_waffle
                     newPoint.X = delta.X;
                     newPoint.Y = delta.Y;
 
-                    neu.Position += (Vector)newPoint;
-                    foreach((Neuron neron, Line line) in neu.InputBranch)
+                    neuron.Position += (Vector)newPoint;
+                    foreach((Neuron neron, Branch branch) in neuron.InputBranch)
                     {
-                        line.X2 = neu.Position.X;
-                        line.Y2 = neu.Position.Y;
+                        branch.SetEnd(neuron.Position);
                     }
-                    foreach ((Neuron neron, double weight, Line line) in neu.OutputBranch)
+                    foreach ((Neuron neron, Branch branch) in neuron.OutputBranch)
                     {
-                        line.X1 = neu.Position.X;
-                        line.Y1 = neu.Position.Y;
+                        branch.SetStart(neuron.Position);
                     }
                 };
             }
