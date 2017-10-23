@@ -6,5 +6,6 @@ namespace fluffy_waffle_core
     {
         Vector Position { get; set; }
         UIElement Control { get; }
+        UIElement TextControl { get; }
     }
 }

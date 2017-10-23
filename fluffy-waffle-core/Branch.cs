@@ -7,72 +7,91 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Shapes;
+using System.Windows.Media.Animation;
+
 
 namespace fluffy_waffle_core
 {
-    public class Branch
+    public class Branch : IDrawable
     {
-        public TextBlock Text { get; set; }
-        public Line Line { get; set; }
+        private TextBlock _text { get; set; }
+        private Line _line{ get; set; }
+        public UIElement Control => _line;
+        public UIElement TextControl => _text;
+        public Vector Position { get; set; }
         public Double Weight { get; set; }
-        public SolidColorBrush BranchColor { get; set; }
-        public SolidColorBrush TextColor { get; set; }
 
-        public Vector Start { get; set; }
-        public Vector End { get; set; }
+        public Neuron Start { get; set; }
+        public Neuron End { get; set; }
         
-        public Branch(Vector start, Vector end)
+        public Branch(Neuron start, Neuron end)
         {
             Weight = new Random().NextDouble();
-            Line = new Line();
-            Text = new TextBlock();
-            SetStart(start);
-            SetEnd(end);
-            SetBranchColor(Brushes.HotPink);
+            _line = new Line();
+            _text = new TextBlock();
+            Start = start;
+            End = end;
+            // middle of line
+            Position = (Start.Position + End.Position) / 2.0;
+
+            SetLineStart();
+            SetLineEnd();
+            
+            SetBranchColor(Colors.HotPink);
             SetText();
-            SetTextColor(Brushes.Black);
+            SetTextColor(Colors.Black);
             TextMove();
         }
 
-        public void SetStart(Vector start)
+        public void SetLineStart()
         {
-            this.Start = start;
-            Line.X1 = start.X;
-            Line.Y1 = start.Y;
+            _line.X1 = this.Start.Position.X;
+            _line.Y1 = this.Start.Position.Y;
             TextMove();
         }
 
-        public void SetEnd(Vector end)
+        public void SetLineEnd()
         {
-            this.End = end;
-            Line.X2 = end.X;
-            Line.Y2 = end.Y;
+            _line.X2 = this.End.Position.X;
+            _line.Y2 = this.End.Position.Y;
             TextMove();
         }
 
-        public void SetBranchColor(SolidColorBrush brush)
+        public void SetBranchColor(Color c)
         {
-            this.BranchColor = brush;
-            Line.Dispatcher.Invoke(() => { Line.Stroke = brush; });
+            SolidColorBrush branchColor = new SolidColorBrush() { Color = c };
+            // 원래 색깔변하는 코드
+            _line.Dispatcher.Invoke(() => { _line.Stroke = branchColor; });
         }
 
-        public void SetTextColor(SolidColorBrush brush)
+        public void BranchAnimation(Color c)
         {
-            this.TextColor = brush;
-            Text.Dispatcher.Invoke(() => { Text.Foreground = brush; });
+            ColorAnimation animation = new ColorAnimation(c, new Duration(new TimeSpan(0, 0, 1)));
+            _line.Stroke.BeginAnimation(SolidColorBrush.ColorProperty, animation);
+        }
+
+        public void SetTextColor(Color c)
+        {
+            SolidColorBrush textColor = new SolidColorBrush() { Color = c };
+            _text.Dispatcher.Invoke(() => { _text.Foreground = textColor; });
         }
 
         public void SetText()
         {
-            this.Text.Text = this.Weight.ToString();
+            this._text.Text = String.Format("{0:0.###}", Weight);
         }
 
         public void TextMove()
         {
-            this.Text.Margin = new Thickness(
-                (this.Start.X + this.End.X) / 2,
-                (this.Start.Y + this.End.Y) / 2,
+            this._text.Margin = new Thickness(
+                Position.X,
+                Position.Y,
                 0, 0);
+        }
+
+        public void Propagation()
+        {
+            this.End.Value = (this.Start.Value * this.Weight) + this.End.Value;
         }
     }
 }

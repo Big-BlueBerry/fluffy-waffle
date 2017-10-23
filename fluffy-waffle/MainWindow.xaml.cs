@@ -71,7 +71,7 @@ namespace fluffy_waffle
                     !_clicked.IsNeuronOutputBranch(neuron) && 
                     !neuron.IsNeuronInputBranch(_clicked))
                 {
-                    Branch branch = new Branch(_clicked.Position, neuron.Position);
+                    Branch branch = new Branch(_clicked, neuron);
                     DrawBranch(branch);
                     _clicked.AppendOutputBranch(neuron, branch);
                     neuron.AppendInputBranch(_clicked, branch);
@@ -92,54 +92,14 @@ namespace fluffy_waffle
         
         private void DrawBranch(Branch branch)
         {
-            ShapeCanvas.Children.Add(branch.Line);
-            ShapeCanvas.Children.Add(branch.Text);
+            AddDrawable(branch);
         }
 
         void AddDrawable(IDrawable item)
         {
-            // 드래그 이벤트 추가
-            if (item is Neuron)
-            {
-                var neuron = item as Neuron;
-                var shape = neuron.Control as Ellipse;
-                shape.MouseLeftButtonDown += (s, e) =>
-                {
-                    neuron.NeuronFirstPosition = e.GetPosition(shape);
-                    neuron.IsNeuronClicked = true;
-                };
-                shape.MouseLeftButtonUp += (s, e) => neuron.IsNeuronClicked = false;
-                shape.MouseLeave += (s, e) =>
-                {
-                    if (neuron.IsNeuronClicked) neuron.IsNeuronClicked = false;
-                };
-                shape.MouseMove += (s, e) =>
-                {
-                    if (!neuron.IsNeuronClicked) return;
-                    var delta = e.GetPosition(shape) - neuron.NeuronFirstPosition;
-                    shape.Margin = new Thickness(shape.Margin.Left + delta.X,
-                        shape.Margin.Top + delta.Y,
-                        shape.Margin.Right + delta.X,
-                        shape.Margin.Bottom + delta.Y);
-
-                    Point newPoint = new Point();
-                    newPoint.X = delta.X;
-                    newPoint.Y = delta.Y;
-
-                    neuron.Position += (Vector)newPoint;
-                    foreach((Neuron neron, Branch branch) in neuron.InputBranch)
-                    {
-                        branch.SetEnd(neuron.Position);
-                    }
-                    foreach ((Neuron neron, Branch branch) in neuron.OutputBranch)
-                    {
-                        branch.SetStart(neuron.Position);
-                    }
-                };
-            }
-
             _drawables.Add(item);
             ShapeCanvas.Children.Add(item.Control);
+            ShapeCanvas.Children.Add(item.TextControl);
         }
 
         private void ShapeCanvas_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
@@ -156,3 +116,4 @@ namespace fluffy_waffle
         }
     }
 }
+

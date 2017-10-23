@@ -4,7 +4,9 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Shapes;
-using System.Timers;
+using System.Windows.Controls;
+
+using Timer = System.Windows.Threading.DispatcherTimer;
 
 namespace fluffy_waffle_core
 {
@@ -14,7 +16,9 @@ namespace fluffy_waffle_core
         public List<(Neuron neuron, Branch branch)> OutputBranch;
 
         private Ellipse _shape;
+        private TextBlock _text;
         public UIElement Control => _shape;
+        public UIElement TextControl => _text;
         public Vector Position { get; set; }
         public Double Value { get; set; }
 
@@ -29,6 +33,7 @@ namespace fluffy_waffle_core
             OutputBranch = new List<(Neuron neuron, Branch branch)>();
 
             // 초기 세팅, Value 는 test용
+            _text = new TextBlock();
             Position = pos;
             Value = 1;
             InitTimer();
@@ -38,13 +43,17 @@ namespace fluffy_waffle_core
             _shape.Stroke = Brushes.Blue;
             _shape.Fill = Brushes.White;
             _shape.Tag = this;
+            
+            InitDrag();
+            SetText();
+            MoveText();
         }
 
         private void InitTimer()
         {
             _timer = new Timer();
-            _timer.Interval = 1000;
-            _timer.Elapsed += PropagationToOutputBranches;
+            _timer.Interval = new TimeSpan(0, 0, 1);
+            _timer.Tick += PropagationToOutputBranches;
         }
 
         public void AppendInputBranch(Neuron neuron, Branch branch)
@@ -60,10 +69,12 @@ namespace fluffy_waffle_core
         public void Propagation()
         {
             this._timer.Start();
+
             foreach ((Neuron neuron, Branch branch) in this.OutputBranch)
-            {   
-                neuron.Value += this.Value * branch.Weight;
-                branch.SetBranchColor(Brushes.Aqua);
+            {
+                branch.Propagation();
+                branch.BranchAnimation(Colors.Aqua);
+                neuron.SetText();
             }
         }
 
@@ -74,7 +85,7 @@ namespace fluffy_waffle_core
             foreach ((Neuron neuron, Branch branch) in this.OutputBranch)
             {
                 neuron.Propagation();
-                branch.SetBranchColor(Brushes.HotPink);
+                branch.BranchAnimation(Colors.HotPink);
             }
         }
 
@@ -86,6 +97,59 @@ namespace fluffy_waffle_core
         public bool IsNeuronOutputBranch(Neuron neuron)
         {
             return OutputBranch.Any((t) => t.neuron == neuron);
+        }
+
+        public void InitDrag()
+        {
+            _shape.MouseLeftButtonDown += (s, e) =>
+            {
+                NeuronFirstPosition = e.GetPosition(_shape);
+                IsNeuronClicked = true;
+            };
+            _shape.MouseLeftButtonUp += (s, e) => IsNeuronClicked = false;
+            _shape.MouseLeave += (s, e) =>
+            {
+                if (IsNeuronClicked) IsNeuronClicked = false;
+            };
+            _shape.MouseMove += (s, e) =>
+            {
+                if (!this.IsNeuronClicked) return;
+                var delta = e.GetPosition(_shape) - NeuronFirstPosition;
+                _shape.Margin = new Thickness(
+                        _shape.Margin.Left + delta.X,
+                        _shape.Margin.Top + delta.Y,
+                        _shape.Margin.Right + delta.X,
+                        _shape.Margin.Bottom + delta.Y
+                    );
+                Point newPoint = new Point();
+                newPoint.X = delta.X;
+                newPoint.Y = delta.Y;
+
+                this.Position += (Vector)newPoint;
+                MoveText();
+                foreach ((Neuron neuron, Branch branch) in InputBranch)
+                {
+                    branch.SetLineEnd();
+                }
+                foreach ((Neuron neuron, Branch branch) in OutputBranch)
+                {
+                    branch.SetLineStart();
+                }
+            };
+        }
+
+        private void SetText()
+        {
+            
+            _text.Text = String.Format("{0:0.###}", Value);
+        }
+
+        private void MoveText()
+        {
+            _text.Margin = new Thickness(
+                Position.X,
+                Position.Y,
+                0, 0);
         }
     }
 }
