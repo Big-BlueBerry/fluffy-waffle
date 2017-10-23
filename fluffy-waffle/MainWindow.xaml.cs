@@ -22,7 +22,6 @@ namespace fluffy_waffle
         private List<IDrawable> _drawables = new List<IDrawable>();
         List<Neuron> Neurons;
         private Neuron _clicked = null;
-        private Vector _temp;
         private bool _isAddingMode = false;
 
         public MainWindow()
@@ -58,8 +57,7 @@ namespace fluffy_waffle
                 AddNeuronBtn.Background = Brushes.White;
             }
         }
-
-        // 첫 클릭 => 두번째 클릭으로 branch 생성
+        
         private void Control_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             var neuron = (sender as Shape).Tag as Neuron;
@@ -73,9 +71,10 @@ namespace fluffy_waffle
                     !_clicked.IsNeuronOutputBranch(neuron) && 
                     !neuron.IsNeuronInputBranch(_clicked))
                 {
-                    Line line = DrawLine(_clicked, neuron);
-                    _clicked.AppendOutputBranch(neuron, line);
-                    neuron.AppendInputBranch(_clicked, line);
+                    Branch branch = new Branch(_clicked, neuron);
+                    DrawBranch(branch);
+                    _clicked.AppendOutputBranch(neuron, branch);
+                    neuron.AppendInputBranch(_clicked, branch);
 
                     _clicked = null;
                 }
@@ -90,67 +89,17 @@ namespace fluffy_waffle
             neuron.Propagation();
             Debug.WriteLine($"하읏 :{neuron.Value}\n");
         }
-
-        // 두 Neuron에 선 추가
-        private Line DrawLine(Neuron start, Neuron end)
+        
+        private void DrawBranch(Branch branch)
         {
-            Line line = new Line();
-            line.X1 = start.Position.X;
-            line.Y1 = start.Position.Y;
-            line.X2 = end.Position.X;
-            line.Y2 = end.Position.Y;
-
-            line.Stroke = Brushes.HotPink;
-            ShapeCanvas.Children.Add(line);
-            return line;
+            AddDrawable(branch);
         }
 
         void AddDrawable(IDrawable item)
         {
-            // 드래그 이벤트 추가
-            if (item is Neuron)
-            {
-                var neu = item as Neuron;
-                var shape = neu.Control as Ellipse;
-                shape.MouseLeftButtonDown += (s, e) =>
-                {
-                    neu.NeuronFirstPosition = e.GetPosition(shape);
-                    neu.IsNeuronClicked = true;
-                };
-                shape.MouseLeftButtonUp += (s, e) => neu.IsNeuronClicked = false;
-                shape.MouseLeave += (s, e) =>
-                {
-                    if (neu.IsNeuronClicked) neu.IsNeuronClicked = false;
-                };
-                shape.MouseMove += (s, e) =>
-                {
-                    if (!neu.IsNeuronClicked) return;
-                    var delta = e.GetPosition(shape) - neu.NeuronFirstPosition;
-                    shape.Margin = new Thickness(shape.Margin.Left + delta.X,
-                        shape.Margin.Top + delta.Y,
-                        shape.Margin.Right + delta.X,
-                        shape.Margin.Bottom + delta.Y);
-
-                    Point newPoint = new Point();
-                    newPoint.X = delta.X;
-                    newPoint.Y = delta.Y;
-
-                    neu.Position += (Vector)newPoint;
-                    foreach((Neuron neron, Line line) in neu.InputBranch)
-                    {
-                        line.X2 = neu.Position.X;
-                        line.Y2 = neu.Position.Y;
-                    }
-                    foreach ((Neuron neron, double weight, Line line) in neu.OutputBranch)
-                    {
-                        line.X1 = neu.Position.X;
-                        line.Y1 = neu.Position.Y;
-                    }
-                };
-            }
-
             _drawables.Add(item);
             ShapeCanvas.Children.Add(item.Control);
+            ShapeCanvas.Children.Add(item.TextControl);
         }
 
         private void ShapeCanvas_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
@@ -167,3 +116,4 @@ namespace fluffy_waffle
         }
     }
 }
+
