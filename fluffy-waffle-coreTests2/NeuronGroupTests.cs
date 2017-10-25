@@ -25,7 +25,8 @@ namespace fluffy_waffle_core.Tests
 
             Bridge bridge = new Bridge();
             bridge.BuildBridge(group1, group2);
-            Matrix<double> matrix = bridge.CrossBridge(group1.GetGroupVector());
+            Vector<double> nextVector = bridge.CrossBridge(group1.GetGroupVector());
+            group2.SetValue(nextVector);
         }
     }
 }

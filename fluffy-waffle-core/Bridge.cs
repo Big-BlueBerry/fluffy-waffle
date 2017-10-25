@@ -33,7 +33,7 @@ namespace fluffy_waffle_core
             Weights = DenseMatrix.OfArray(weights);
         }
 
-        public Matrix<double> CrossBridge(Matrix<double> layer)
+        public Vector<double> CrossBridge(Vector<double> layer)
         {
             return layer * Weights;
         }

@@ -14,14 +14,14 @@ namespace fluffy_waffle_core
     public class NeuronGroup
     {
         public List<Neuron> Group { get; set; }
-        public Double NetworkValue { get; set; }
-        public Double OutputValue { get; set; }
+        public Vector<double> NetworkValue { get; set; }
+        public Vector<double> OutputValue { get; set; }
+        public List<bool> IsActivated;
 
         public NeuronGroup()
         {
             Group = new List<Neuron>();
-            NetworkValue = 0;
-            OutputValue = 0;
+            IsActivated = new List<bool>();
         }
 
         public void AddNeuron(Neuron neuron)
@@ -29,19 +29,26 @@ namespace fluffy_waffle_core
             Group.Add(neuron);
         }
 
-        public Matrix<double> GetGroupVector()
+        public Vector<double> GetGroupVector()
         {
             double[] vector = (from neuron in Group
                                select neuron.Value).ToArray();
-            int size = vector.Length;
-            double[,] matrix = new double[1, size];
-            for (int i = 0; i < size; i++) matrix[0, i] = vector[i];
-            return DenseMatrix.OfArray(matrix);
+            return DenseVector.OfArray(vector);
         }
 
-        public void ActivateNeuron()
+        public void SetValue(Vector<double> passResult)
         {
-            throw new NotImplementedException();
+            NetworkValue = passResult;
+            ActivateNeuron(passResult);
+        }
+        private void ActivateNeuron(Vector<double> networkResult)
+        {
+            OutputValue = Sigmoid(networkResult);
+        }
+
+        private Vector<double> Sigmoid(Vector<double> vector)
+        {
+            return 1 / 1 + Vector.Exp(-vector);
         }
     }
 }
