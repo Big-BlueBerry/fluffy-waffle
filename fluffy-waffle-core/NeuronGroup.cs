@@ -13,18 +13,18 @@ namespace fluffy_waffle_core
      */
     public class NeuronGroup
     {
-        private List<Neuron> _group { get; set; }
+        public List<Neuron> Group { get; set; }
         public Double NetworkValue { get; set; }
         public Double OutputValue { get; set; }
 
         public void AppendNeuron(Neuron neuron)
         {
-            _group.Add(neuron);
+            Group.Add(neuron);
         }
 
         public Double[] GetGroupVector()
         {
-            var vector = from neuron in _group
+            var vector = from neuron in Group
                        select neuron.Value;
             return vector.Select(x => (double)x).ToArray();
         }
