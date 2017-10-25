@@ -53,39 +53,41 @@ namespace fluffy_waffle_core
         {
             _timer = new Timer();
             _timer.Interval = new TimeSpan(0, 0, 1);
-            _timer.Tick += PropagationToOutputBranches;
+            _timer.Tick += FowardPassToOutputBranches;
         }
 
         public void AppendInputBranch(Neuron neuron, Branch branch)
         {
             this.InputBranch.Add((neuron, branch));
+            // 이 뉴런은 hidden layer의 neuron이기 때문에 값을 초기화한다.
+            if (Value == 1)
+                Value = 0;
         }
         
         public void AppendOutputBranch(Neuron neuron, Branch branch)
         {
-            this.OutputBranch.Add((neuron, branch));          
+            this.OutputBranch.Add((neuron, branch));
         }
 
-        public void Propagation()
+        public void FowardPass()
         {
             this._timer.Start();
 
             foreach ((Neuron neuron, Branch branch) in this.OutputBranch)
             {
-                branch.Propagation();
+                branch.FowardPass();
                 branch.BranchAnimation(Colors.Aqua);
                 neuron.SetText();
             }
         }
 
-        private void PropagationToOutputBranches(object sender, EventArgs e)
+        private void FowardPassToOutputBranches(object sender, EventArgs e)
         {
             _timer.Stop();
             
             foreach ((Neuron neuron, Branch branch) in this.OutputBranch)
             {
-                neuron.Propagation();
-                branch.BranchAnimation(Colors.HotPink);
+                neuron.FowardPass();
             }
         }
 
@@ -140,7 +142,6 @@ namespace fluffy_waffle_core
 
         private void SetText()
         {
-            
             _text.Text = String.Format("{0:0.###}", Value);
         }
 

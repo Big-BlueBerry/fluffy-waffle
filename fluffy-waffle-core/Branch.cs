@@ -9,7 +9,6 @@ using System.Windows.Media;
 using System.Windows.Shapes;
 using System.Windows.Media.Animation;
 
-
 namespace fluffy_waffle_core
 {
     public class Branch : IDrawable
@@ -67,8 +66,10 @@ namespace fluffy_waffle_core
         public void BranchAnimation(Color c)
         {
             ColorAnimation animation = new ColorAnimation(c, new Duration(new TimeSpan(0, 0, 1)));
+            animation.AutoReverse = true;
             _line.Stroke.BeginAnimation(SolidColorBrush.ColorProperty, animation);
         }
+
 
         public void SetTextColor(Color c)
         {
@@ -89,9 +90,9 @@ namespace fluffy_waffle_core
                 0, 0);
         }
 
-        public void Propagation()
+        public void FowardPass()
         {
-            this.End.Value = (this.Start.Value * this.Weight) + this.End.Value;
+            this.End.Value += this.Start.Value * this.Weight;
         }
     }
 }

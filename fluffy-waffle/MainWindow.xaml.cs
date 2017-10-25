@@ -86,7 +86,7 @@ namespace fluffy_waffle
         private void Control_MouseRightButtonDown(object sender, MouseButtonEventArgs e)
         {
             var neuron = (sender as Shape).Tag as Neuron;
-            neuron.Propagation();
+            neuron.FowardPass();
             Debug.WriteLine($"하읏 :{neuron.Value}\n");
         }
         
@@ -116,4 +116,3 @@ namespace fluffy_waffle
         }
     }
 }
-
