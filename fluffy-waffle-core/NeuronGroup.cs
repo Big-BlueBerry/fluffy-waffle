@@ -1,8 +1,8 @@
-﻿using System;
+﻿using MathNet.Numerics.LinearAlgebra;
+using MathNet.Numerics.LinearAlgebra.Double;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace fluffy_waffle_core
 {
@@ -17,16 +17,26 @@ namespace fluffy_waffle_core
         public Double NetworkValue { get; set; }
         public Double OutputValue { get; set; }
 
-        public void AppendNeuron(Neuron neuron)
+        public NeuronGroup()
+        {
+            Group = new List<Neuron>();
+            NetworkValue = 0;
+            OutputValue = 0;
+        }
+
+        public void AddNeuron(Neuron neuron)
         {
             Group.Add(neuron);
         }
 
-        public Double[] GetGroupVector()
+        public Matrix<double> GetGroupVector()
         {
-            var vector = from neuron in Group
-                       select neuron.Value;
-            return vector.Select(x => (double)x).ToArray();
+            double[] vector = (from neuron in Group
+                               select neuron.Value).ToArray();
+            int size = vector.Length;
+            double[,] matrix = new double[1, size];
+            for (int i = 0; i < size; i++) matrix[0, i] = vector[i];
+            return DenseMatrix.OfArray(matrix);
         }
 
         public void ActivateNeuron()
