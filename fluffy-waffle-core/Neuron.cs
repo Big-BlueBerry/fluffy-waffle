@@ -21,6 +21,7 @@ namespace fluffy_waffle_core
         public UIElement TextControl => _text;
         public Vector Position { get; set; }
         public Double Value { get; set; }
+        public Double Delta { get; set; }
 
         public bool IsNeuronClicked;
         public Point NeuronFirstPosition;
@@ -36,6 +37,7 @@ namespace fluffy_waffle_core
             _text = new TextBlock();
             Position = pos;
             Value = 1;
+            Delta = 0;
             InitTimer();
 
             _shape = new Ellipse();

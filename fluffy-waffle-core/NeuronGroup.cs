@@ -10,18 +10,22 @@ namespace fluffy_waffle_core
      * 모든 뉴런들은 그룹화 되어서 사용된다.
      * 하나의 뉴런일지라도 그룹화 돼야함.
      * 이 뉴런 그룹을 통해 다른 그룹 혹은 Bridge과 상호작용한다.
+     * network value는 activate하기 전 값이고, 미분할 때 편하게 하기 위해서 생성하였다.
      */
     public class NeuronGroup
     {
         public List<Neuron> Group { get; set; }
-        public Vector<double> NetworkValue { get; set; }
+        public Vector<double> InputValue { get; set; }
         public Vector<double> OutputValue { get; set; }
+        public Vector<double> Delta;
         public List<bool> IsActivated;
 
         public NeuronGroup()
         {
             Group = new List<Neuron>();
             IsActivated = new List<bool>();
+            InputValue = null;
+            OutputValue = null;
         }
 
         public void AddNeuron(Neuron neuron)
@@ -38,9 +42,10 @@ namespace fluffy_waffle_core
 
         public void SetValue(Vector<double> passResult)
         {
-            NetworkValue = passResult;
+            InputValue = passResult;
             ActivateNeuron(passResult);
         }
+
         private void ActivateNeuron(Vector<double> networkResult)
         {
             OutputValue = Sigmoid(networkResult);
