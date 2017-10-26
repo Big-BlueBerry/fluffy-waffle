@@ -16,7 +16,8 @@ namespace fluffy_waffle_core
     {
         public Branch[,] Branches { get; set; }
         public Matrix<double> Weights { get; set; }
-
+        public Matrix<double> UpdateWeights { get; set; }
+        
         public void BuildBridge(NeuronGroup first, NeuronGroup second)
         {
             Branches = new Branch[first.Group.Count, second.Group.Count];
@@ -36,6 +37,14 @@ namespace fluffy_waffle_core
         public Vector<double> CrossBridge(Vector<double> layer)
         {
             return layer * Weights;
+        }
+
+        public void BackPropagation(Vector<double> output, Vector<double> delta)
+        {
+            Matrix matOutput = DenseMatrix.OfColumnVectors(output);
+            Matrix matDelta = DenseMatrix.OfColumnVectors(delta);
+
+            UpdateWeights = Weights - matOutput * matDelta;
         }
     }
 }

@@ -12,6 +12,12 @@ namespace fluffy_waffle_core
         public List<NeuronGroup> Layers;
         public List<Bridge> Bridges;
 
+        public Network()
+        {
+            Layers = new List<NeuronGroup>();
+            Bridges = new List<Bridge>();
+        }           
+
         public void AddLayer(NeuronGroup layer)
         {
             Layers.Add(layer);
@@ -26,9 +32,7 @@ namespace fluffy_waffle_core
         {
             for (int i = 0; i < Layers.Count - 1; i++)
             {
-                Bridges[i].BuildBridge(Layers[i - 1], Layers[i]);
-                Vector<double> nextLayerVector = i == 0 ? Layers[i - 1].GetGroupVector() : Layers[i - 1].OutputValue;
-                nextLayerVector = Bridges[i].CrossBridge(nextLayerVector);
+                Bridges[i].BuildBridge(Layers[i], Layers[i + 1]);
             }
         }
 
@@ -39,12 +43,23 @@ namespace fluffy_waffle_core
 
         public void FowardPass()
         {
-            throw new NotImplementedException();
+            for (int i = 0; i < Layers.Count - 1; i++)
+            {
+                Vector<double> nextLayerVector = i == 0 ? Layers[i].GetGroupVector() : Layers[i].OutputValue;
+                nextLayerVector = Bridges[i].CrossBridge(nextLayerVector);
+                Layers[i + 1].SetValue(nextLayerVector);
+            }            
         }
 
-        public void Propagation()
+        public void BackPropagation(Vector<double> Y)
         {
-            throw new NotImplementedException();
+            Vector<double> output = Layers.Last().OutputValue;
+            Vector<double> error = Y - output;
+            Vector<double> lastDelta = error * output * (1 - output);
+            Layers.Last().Delta = lastDelta;
+
+            Bridges[1].BackPropagation(Layers[1].OutputValue, lastDelta);
+            
         }
     }
 }

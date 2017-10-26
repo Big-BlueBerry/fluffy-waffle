@@ -15,17 +15,18 @@ namespace fluffy_waffle_core
     public class NeuronGroup
     {
         public List<Neuron> Group { get; set; }
-        public Vector<double> InputValue { get; set; }
+        public Vector<double> NetworkValue { get; set; }
         public Vector<double> OutputValue { get; set; }
-        public Vector<double> Delta;
+        public Vector<double> Delta { get; set; }
         public List<bool> IsActivated;
 
         public NeuronGroup()
         {
             Group = new List<Neuron>();
             IsActivated = new List<bool>();
-            InputValue = null;
+            NetworkValue = null;
             OutputValue = null;
+            Delta = null;
         }
 
         public void AddNeuron(Neuron neuron)
@@ -42,8 +43,14 @@ namespace fluffy_waffle_core
 
         public void SetValue(Vector<double> passResult)
         {
-            InputValue = passResult;
+            NetworkValue = passResult;
             ActivateNeuron(passResult);
+
+            for(int i = 0; i < Group.Count; i++)
+            {
+                Group[i].NetworkValue = NetworkValue[i];
+                Group[i].OutputValue = OutputValue[i];
+            }
         }
 
         private void ActivateNeuron(Vector<double> networkResult)
