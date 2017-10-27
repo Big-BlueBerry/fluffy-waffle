@@ -76,7 +76,7 @@ namespace fluffy_waffle_core
         public void SetDelta(Vector<double> nextLayerDelta, Matrix<double> weights)
         {
             Matrix<double> transWeights = weights.Transpose();
-            Delta = nextLayerDelta * transWeights * Sigmoid(OutputValue) * ( 1 - Sigmoid(OutputValue));
+            Delta = nextLayerDelta * transWeights * Sigmoid(NetworkValue) * ( 1 - Sigmoid(NetworkValue));
         }
     }
 }

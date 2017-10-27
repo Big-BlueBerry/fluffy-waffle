@@ -38,7 +38,7 @@ namespace fluffy_waffle_core.Tests
 
             model.Build();
             model.FowardPass();
-            model.BackPropagation(DenseVector.OfArray(new Double[] { 4, 5 }));
+            model.BackPropagation(DenseVector.OfArray(new Double[] { 2, 2 }));
             //NeuronGroup last = model.GetPredictLayer();
             //Vector<double> predict = last.InputValue;
             //double[] y = new double[] { 4 };

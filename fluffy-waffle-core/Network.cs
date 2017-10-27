@@ -45,7 +45,7 @@ namespace fluffy_waffle_core
         {
             for (int i = 0; i < Layers.Count - 1; i++)
             {
-                Vector<double> outputVector = i == 0 ? Layers[i].GetGroupVector() : Layers[i].OutputValue;
+                Vector<double> outputVector = (i == 0) ? Layers[i].GetGroupVector() : Layers[i].OutputValue;
                 outputVector = Bridges[i].CrossBridge(outputVector);
                 Layers[i + 1].SetValue(outputVector);
             }            
@@ -59,12 +59,27 @@ namespace fluffy_waffle_core
         public void BackPropagation(Vector<double> Y)
         {
             Vector<double> output = Layers.Last().OutputValue;
+            Vector<double> network = Layers.Last().NetworkValue;
             Vector<double> error = Y - output;
-            Vector<double> lastDelta = error * Sigmoid(output) * (1 - Sigmoid(output));
+            Vector<double> lastDelta = error * Sigmoid(network) * (1 - Sigmoid(network));
             Layers.Last().Delta = lastDelta;
 
-            Bridges[1].BackPropagation(Layers[1].OutputValue, lastDelta);
-            Layers[1].SetDelta(Layers[2].Delta, Bridges[1].Weights);
+            for (int i = Bridges.Count - 1; i > 0; i--)
+            {
+                Bridges[i].BackPropagation(Layers[i].OutputValue, lastDelta);
+                Layers[i].SetDelta(Layers[i + 1].Delta, Bridges[i].Weights);
+                lastDelta = Layers[i].Delta;
+            }
+            Bridges[0].BackPropagation(Layers[0].GetGroupVector(), Layers[1].Delta);
+            UpdateValues();
+        }
+
+        private void UpdateValues()
+        {
+            foreach(Bridge bridge in Bridges)
+            {
+                bridge.WeightUpdate();
+            }
         }
     }
 }

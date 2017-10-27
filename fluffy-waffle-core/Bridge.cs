@@ -46,5 +46,18 @@ namespace fluffy_waffle_core
 
             UpdateWeights = Weights - matOutput * matDelta;
         }
+
+        public void WeightUpdate()
+        {
+            Weights = UpdateWeights;
+            for (int i = 0; i < Weights.RowCount; i++)
+            {
+                for(int j = 0; j < Weights.ColumnCount; j++)
+                {
+                    Branches[i, j].Weight = Weights[i, j];
+                }
+            }
+            
+        }
     }
 }
