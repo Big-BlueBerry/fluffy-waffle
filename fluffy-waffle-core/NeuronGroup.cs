@@ -46,9 +46,19 @@ namespace fluffy_waffle_core
             NetworkValue = passResult;
             ActivateNeuron(passResult);
 
-            for(int i = 0; i < Group.Count; i++)
+            for (int i = 0; i < Group.Count; i++)
             {
                 Group[i].NetworkValue = NetworkValue[i];
+                Group[i].OutputValue = OutputValue[i];
+            }
+
+            SetNeuronValue();
+        }
+
+        private void SetNeuronValue()
+        {
+            for(int i = 0; i < OutputValue.Count; i++)
+            {
                 Group[i].OutputValue = OutputValue[i];
             }
         }
@@ -66,7 +76,7 @@ namespace fluffy_waffle_core
         public void SetDelta(Vector<double> nextLayerDelta, Matrix<double> weights)
         {
             Matrix<double> transWeights = weights.Transpose();
-            Delta = nextLayerDelta * transWeights;
+            Delta = nextLayerDelta * transWeights * Sigmoid(OutputValue) * ( 1 - Sigmoid(OutputValue));
         }
     }
 }

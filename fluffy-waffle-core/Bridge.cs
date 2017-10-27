@@ -26,7 +26,7 @@ namespace fluffy_waffle_core
             {
                 for (int j = 0; j < second.Group.Count; j++)
                 {
-                    Branch branch = new Branch(first.Group[i], first.Group[j]);
+                    Branch branch = new Branch(first.Group[i], second.Group[j]);
                     Branches[i, j] = branch;
                     weights[i, j] = branch.Weight;
                 }

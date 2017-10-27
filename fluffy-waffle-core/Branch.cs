@@ -25,7 +25,7 @@ namespace fluffy_waffle_core
         
         public Branch(Neuron start, Neuron end)
         {
-            Weight = new Random().NextDouble();
+            Weight = new Random(unchecked((int)DateTime.Now.Ticks)).NextDouble() * 2 - 1;
             _line = new Line();
             _text = new TextBlock();
             Start = start;
