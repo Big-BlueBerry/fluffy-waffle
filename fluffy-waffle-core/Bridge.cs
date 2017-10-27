@@ -42,7 +42,7 @@ namespace fluffy_waffle_core
         public void BackPropagation(Vector<double> output, Vector<double> delta)
         {
             Matrix matOutput = DenseMatrix.OfColumnVectors(output);
-            Matrix matDelta = DenseMatrix.OfColumnVectors(delta);
+            Matrix matDelta = DenseMatrix.OfRowVectors(delta);
 
             UpdateWeights = Weights - matOutput * matDelta;
         }

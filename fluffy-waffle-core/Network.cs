@@ -59,7 +59,7 @@ namespace fluffy_waffle_core
             Layers.Last().Delta = lastDelta;
 
             Bridges[1].BackPropagation(Layers[1].OutputValue, lastDelta);
-            
+            Layers[1].SetDelta(Layers[2].Delta, Bridges[1].Weights);
         }
     }
 }

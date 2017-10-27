@@ -62,5 +62,11 @@ namespace fluffy_waffle_core
         {
             return 1 / 1 + Vector.Exp(-vector);
         }
+
+        public void SetDelta(Vector<double> nextLayerDelta, Matrix<double> weights)
+        {
+            Matrix<double> transWeights = weights.Transpose();
+            Delta = nextLayerDelta * transWeights;
+        }
     }
 }

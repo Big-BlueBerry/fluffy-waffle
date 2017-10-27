@@ -7,7 +7,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "fluffy-waffle", "fluffy-waf
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "fluffy-waffle-core", "fluffy-waffle-core\fluffy-waffle-core.csproj", "{9845394E-A768-4507-ADF1-74DCA525D3C1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "fluffy-waffle-coreTests", "fluffy-waffle-coreTests2\fluffy-waffle-coreTests.csproj", "{C8561ED8-81E6-47AF-8376-6789A58B5D2B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "fluffy-waffle-coreTests", "fluffy-waffle-coreTests\fluffy-waffle-coreTests.csproj", "{2E915744-CCC0-4DF7-9F7C-E45B2DEBD394}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -23,10 +23,10 @@ Global
 		{9845394E-A768-4507-ADF1-74DCA525D3C1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9845394E-A768-4507-ADF1-74DCA525D3C1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9845394E-A768-4507-ADF1-74DCA525D3C1}.Release|Any CPU.Build.0 = Release|Any CPU
-		{C8561ED8-81E6-47AF-8376-6789A58B5D2B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{C8561ED8-81E6-47AF-8376-6789A58B5D2B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{C8561ED8-81E6-47AF-8376-6789A58B5D2B}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{C8561ED8-81E6-47AF-8376-6789A58B5D2B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2E915744-CCC0-4DF7-9F7C-E45B2DEBD394}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2E915744-CCC0-4DF7-9F7C-E45B2DEBD394}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2E915744-CCC0-4DF7-9F7C-E45B2DEBD394}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2E915744-CCC0-4DF7-9F7C-E45B2DEBD394}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
