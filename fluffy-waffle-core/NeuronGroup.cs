@@ -70,13 +70,13 @@ namespace fluffy_waffle_core
 
         private Vector<double> Sigmoid(Vector<double> vector)
         {
-            return 1 / 1 + Vector.Exp(-vector);
+            return 1 / (1 + Vector.Exp(-vector));
         }
 
         public void SetDelta(Vector<double> nextLayerDelta, Matrix<double> weights)
         {
             Matrix<double> transWeights = weights.Transpose();
-            Delta = nextLayerDelta * transWeights * Sigmoid(NetworkValue) * ( 1 - Sigmoid(NetworkValue));
+            Delta = (nextLayerDelta * transWeights) * (Sigmoid(NetworkValue) * (1 - Sigmoid(NetworkValue)));
         }
     }
 }

@@ -57,7 +57,6 @@ namespace fluffy_waffle_core
                     Branches[i, j].Weight = Weights[i, j];
                 }
             }
-            
         }
     }
 }

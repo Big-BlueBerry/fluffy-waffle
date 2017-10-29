@@ -53,22 +53,19 @@ namespace fluffy_waffle_core
 
         private Vector<double> Sigmoid(Vector<double> vector)
         {
-            return 1 / 1 + Vector<double>.Exp(-vector);
+            return 1 / (1 + Vector<double>.Exp(-vector));
 
         }
         public void BackPropagation(Vector<double> Y)
         {
             Vector<double> output = Layers.Last().OutputValue;
             Vector<double> network = Layers.Last().NetworkValue;
-            Vector<double> error = Y - output;
-            Vector<double> lastDelta = error * Sigmoid(network) * (1 - Sigmoid(network));
-            Layers.Last().Delta = lastDelta;
+            Layers.Last().Delta = (output - Y) * (Sigmoid(network) * (1 - Sigmoid(network)));
 
             for (int i = Bridges.Count - 1; i > 0; i--)
             {
-                Bridges[i].BackPropagation(Layers[i].OutputValue, lastDelta);
+                Bridges[i].BackPropagation(Layers[i].OutputValue, Layers[i + 1].Delta);
                 Layers[i].SetDelta(Layers[i + 1].Delta, Bridges[i].Weights);
-                lastDelta = Layers[i].Delta;
             }
             Bridges[0].BackPropagation(Layers[0].GetGroupVector(), Layers[1].Delta);
             UpdateValues();
