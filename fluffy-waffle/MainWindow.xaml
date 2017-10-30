@@ -12,7 +12,7 @@
         </ColorAnimation>
     </Window.Resources>
     <Grid>
-        <Canvas Name="ShapeCanvas" MouseLeftButtonDown="ShapeCanvas_MouseLeftButtonDown" Background="White">
+        <Canvas Name="ShapeCanvas" MouseLeftButtonDown="ShapeCanvas_MouseLeftButtonDown"  MouseLeftButtonUp="ShapeCanvas_MouseLeftButtonUp"  Background="White">
             <Button Content="Add Neuron" Name="AddNeuronBtn" Canvas.Left="432" Canvas.Top="289" Width="75"/>
         </Canvas>
     </Grid>

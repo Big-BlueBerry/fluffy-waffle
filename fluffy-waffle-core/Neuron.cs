@@ -27,7 +27,7 @@ namespace fluffy_waffle_core
         public bool IsNeuronClicked;
         public Point NeuronFirstPosition;
 
-        private Timer _timer;        
+        private Timer _timer;
 
         public Neuron(Vector pos)
         {
@@ -153,6 +153,11 @@ namespace fluffy_waffle_core
                 Position.X,
                 Position.Y,
                 0, 0);
+        }
+
+        public void SetColor(Color color)
+        {
+            _shape.Fill = new SolidColorBrush(color);
         }
     }
 }

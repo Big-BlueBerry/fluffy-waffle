@@ -21,21 +21,26 @@ namespace fluffy_waffle
     {
         private List<IDrawable> _drawables = new List<IDrawable>();
         List<Neuron> Neurons;
+        List<NeuronGroup> Groups;
         private Neuron _clicked = null;
         private bool _isAddingMode = false;
+        private bool _isMouseMoved = false;
+        private Vector _startPoint;
 
         public MainWindow()
-        {   
+        {
             InitializeComponent();
 
+            _isMouseMoved = false;
             AddNeuronBtn.Click += AddNeuronBtn_Click;
-            
+
             Neurons = new List<Neuron>();
+            Groups = new List<NeuronGroup>();
 
             Neurons.Add(new Neuron(new Vector(100, 100)));
             Neurons.Add(new Neuron(new Vector(200, 200)));
 
-            foreach(Neuron neuron in Neurons)
+            foreach (Neuron neuron in Neurons)
             {
                 neuron.Control.MouseLeftButtonDown += Control_MouseLeftButtonDown;
                 neuron.Control.MouseRightButtonDown += Control_MouseRightButtonDown;
@@ -57,7 +62,7 @@ namespace fluffy_waffle
                 AddNeuronBtn.Background = Brushes.White;
             }
         }
-        
+
         private void Control_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             var neuron = (sender as Shape).Tag as Neuron;
@@ -67,8 +72,8 @@ namespace fluffy_waffle
                 {
                     _clicked = neuron;
                 }
-                else if (_clicked != neuron && 
-                    !_clicked.IsNeuronOutputBranch(neuron) && 
+                else if (_clicked != neuron &&
+                    !_clicked.IsNeuronOutputBranch(neuron) &&
                     !neuron.IsNeuronInputBranch(_clicked))
                 {
                     Branch branch = new Branch(_clicked, neuron);
@@ -89,7 +94,7 @@ namespace fluffy_waffle
             neuron.FowardPass();
             Debug.WriteLine($"하읏 :{neuron.Value}\n");
         }
-        
+
         private void DrawBranch(Branch branch)
         {
             AddDrawable(branch);
@@ -104,15 +109,53 @@ namespace fluffy_waffle
 
         private void ShapeCanvas_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
+            var pos = e.GetPosition(ShapeCanvas);
+
             if (_isAddingMode)
             {
-                var pos = e.GetPosition(ShapeCanvas);
                 var neuron = new Neuron(new Vector(pos.X, pos.Y));
                 neuron.Control.MouseLeftButtonDown += Control_MouseLeftButtonDown;
                 neuron.Control.MouseRightButtonDown += Control_MouseRightButtonDown;
                 Neurons.Add(neuron);
                 AddDrawable(neuron);
             }
+            else
+            {
+                _startPoint = new Vector(pos.X, pos.Y);
+                _isMouseMoved = true;
+            }
+        }
+
+
+        private void ShapeCanvas_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            if (_isMouseMoved)
+            {
+                var pos = e.GetPosition(ShapeCanvas);
+                Point point = new Point(pos.X, pos.Y);
+                NeuronGroup group = new NeuronGroup();
+                _isMouseMoved = false;
+
+                double minimumX = Math.Abs(_startPoint.X - pos.X);
+                double minimumY = Math.Abs(_startPoint.Y - pos.Y);
+
+                if (minimumX < 10 && minimumY < 10)
+                    return;
+
+                double bigX = _startPoint.X < pos.X ? pos.X : _startPoint.X;
+                double smallX = _startPoint.X > pos.X ? pos.X : _startPoint.X;
+                double bigY = _startPoint.Y < pos.Y ? pos.Y : _startPoint.Y;
+                double smallY = _startPoint.Y > pos.Y ? pos.Y : _startPoint.Y;
+
+                foreach (Neuron neuron in Neurons)
+                {
+                    if (smallX <= neuron.Position.X && neuron.Position.X <= bigX)
+                        if (smallY <= neuron.Position.Y && neuron.Position.Y <= bigY)
+                            group.AddNeuron(neuron);
+                }
+                Groups.Add(group);
+            }
+
         }
     }
 }

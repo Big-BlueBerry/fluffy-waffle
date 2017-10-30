@@ -3,6 +3,7 @@ using MathNet.Numerics.LinearAlgebra.Double;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Windows.Media;
 
 namespace fluffy_waffle_core
 {
@@ -31,6 +32,7 @@ namespace fluffy_waffle_core
 
         public void AddNeuron(Neuron neuron)
         {
+            neuron.SetColor(Colors.Yellow);
             Group.Add(neuron);
         }
 
