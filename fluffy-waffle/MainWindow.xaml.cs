@@ -155,7 +155,6 @@ namespace fluffy_waffle
                 }
                 Groups.Add(group);
             }
-
         }
     }
 }

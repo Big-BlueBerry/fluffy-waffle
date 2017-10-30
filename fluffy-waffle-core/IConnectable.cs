@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 
 namespace fluffy_waffle_core
 {
-    public interface IConnectable
+    interface IConnectable
     {
-        
+        bool Connect(IValuable from, IValuable to);
     }
 }

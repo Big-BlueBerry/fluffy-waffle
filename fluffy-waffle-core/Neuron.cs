@@ -10,13 +10,12 @@ using Timer = System.Windows.Threading.DispatcherTimer;
 
 namespace fluffy_waffle_core
 {
-    public class Neuron : IDrawable
+    public class Neuron : Drawing, IDrawable
     {
         public List<(Neuron neuron, Branch branch)> InputBranch;
         public List<(Neuron neuron, Branch branch)> OutputBranch;
 
         private Ellipse _shape;
-        private TextBlock _text;
         public UIElement Control => _shape;
         public UIElement TextControl => _text;
         public Vector Position { get; set; }
@@ -71,6 +70,15 @@ namespace fluffy_waffle_core
             this.OutputBranch.Add((neuron, branch));
         }
 
+        public void PassTo(Neuron neuron)
+        {
+
+        }
+
+        public void PassTo(NeuronGroup group)
+        {
+
+        }
         public void FowardPass()
         {
             this._timer.Start();

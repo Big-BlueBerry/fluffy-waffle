@@ -52,7 +52,9 @@
   <ItemGroup>
     <Compile Include="Branch.cs" />
     <Compile Include="Bridge.cs" />
-    <Compile Include="Connect.cs" />
+    <Compile Include="Drawing.cs" />
+    <Compile Include="IConnectable.cs" />
+    <Compile Include="IValuable.cs" />
     <Compile Include="IDrawable.cs" />
     <Compile Include="Network.cs" />
     <Compile Include="Neuron.cs" />
