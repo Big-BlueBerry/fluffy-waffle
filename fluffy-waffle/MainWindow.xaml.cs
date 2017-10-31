@@ -21,7 +21,7 @@ namespace fluffy_waffle
     {
         private List<IDrawable> _drawables = new List<IDrawable>();
         List<Neuron> Neurons;
-        List<NeuronGroup> Groups;
+        List<IValuable> Groups;
         private Neuron _clicked = null;
         private bool _isAddingMode = false;
         private bool _isMouseMoved = false;
@@ -35,7 +35,7 @@ namespace fluffy_waffle
             AddNeuronBtn.Click += AddNeuronBtn_Click;
 
             Neurons = new List<Neuron>();
-            Groups = new List<NeuronGroup>();
+            Groups = new List<IValuable>();
 
             Neurons.Add(new Neuron(new Vector(100, 100)));
             Neurons.Add(new Neuron(new Vector(200, 200)));
@@ -65,39 +65,39 @@ namespace fluffy_waffle
 
         private void Control_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-            var neuron = (sender as Shape).Tag as Neuron;
-            if (neuron != null)
-            {
-                if (_clicked == null)
-                {
-                    _clicked = neuron;
-                }
-                else if (_clicked != neuron &&
-                    !_clicked.IsNeuronOutputBranch(neuron) &&
-                    !neuron.IsNeuronInputBranch(_clicked))
-                {
-                    Branch branch = new Branch(_clicked, neuron);
-                    DrawBranch(branch);
-                    _clicked.AppendOutputBranch(neuron, branch);
-                    neuron.AppendInputBranch(_clicked, branch);
+            //var neuron = (sender as Shape).Tag as Neuron;
+            //if (neuron != null)
+            //{
+            //    if (_clicked == null)
+            //    {
+            //        _clicked = neuron;
+            //    }
+            //    else if (_clicked != neuron &&
+            //        !_clicked.IsNeuronOutputBranch(neuron) &&
+            //        !neuron.IsNeuronInputBranch(_clicked))
+            //    {
+            //        Branch branch = new Branch(_clicked, neuron);
+            //        DrawBranch(branch);
+            //        _clicked.AppendOutputBranch(neuron, branch);
+            //        neuron.AppendInputBranch(_clicked, branch);
 
-                    _clicked = null;
-                }
-            }
-            Debug.WriteLine($"어엉어 :{neuron.Value}\n");
+            //        _clicked = null;
+            //    }
+            //}
+            //Debug.WriteLine($"어엉어 :{neuron.Value}\n");
         }
 
         // 우클릭시 전파
         private void Control_MouseRightButtonDown(object sender, MouseButtonEventArgs e)
         {
             var neuron = (sender as Shape).Tag as Neuron;
-            neuron.FowardPass();
-            Debug.WriteLine($"하읏 :{neuron.Value}\n");
+            //neuron.FowardPass();
+            //Debug.WriteLine($"하읏 :{neuron.Value}\n");
         }
 
         private void DrawBranch(Branch branch)
         {
-            AddDrawable(branch);
+            //AddDrawable(branch);
         }
 
         void AddDrawable(IDrawable item)

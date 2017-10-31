@@ -21,15 +21,14 @@ namespace fluffy_waffle_core
 
         protected override Shape _shape { get; set; }
         public int Size { get; set; }
-        public Vector<double> Value { get; set; }
 
-        public Double NetworkValue;
-        public Double OutputValue;
+        public Vector<double> Value { get; set; }
+        public Vector<double> NetworkValue { get; set; }
+        public Vector<double> OutputValue { get; set; }
+        public Vector<double> Delta { get; set; }
 
         public bool IsNeuronClicked;
         public Point NeuronFirstPosition;
-
-        private Timer _timer;
 
         public Neuron(Vector pos)
         {
@@ -37,8 +36,7 @@ namespace fluffy_waffle_core
             Position = pos;
             Value = DenseVector.OfArray(new double[] { 1 });
             Size = 1;
-
-            ConnectList = new List<(IValuable, Branch)>();
+            
             _start = new List<Connector>();
             _end = new List<Connector>();
 
@@ -51,30 +49,15 @@ namespace fluffy_waffle_core
             InitDrag();
         }
 
-        public void PassTo(IValuable target)
+        public void PassTo(IValuable target, Branch branch)
         {
-            foreach((IValuable valuable, Branch branch) in ConnectList)
-            {
-                if(valuable == target)
-                {
-                    target.Value = branch.Weight * Value;
-                    return;
-                }
-            }
+            target.Value = branch.Weight * Value;
         }
 
-        public bool Connect(IValuable target)
+        public Branch Connect(IValuable target)
         {
-            // if already connected 
-            foreach ((IValuable valuable, Branch _) in ConnectList)
-            {
-                if (valuable.Equals(target))
-                    return false;
-            }
-
             Branch branch = new Branch(this, target);
-            ConnectList.Add((target, branch));
-            return true;
+            return branch;
         }
 
         public void AppendStartConn(Connector connector)
@@ -123,6 +106,33 @@ namespace fluffy_waffle_core
             {
                 conn.SetLineEnd((Point)this.Position);
             }
+        }
+
+        public void SetValue(Vector<double> passResult)
+        {
+            double sum = 0;
+            foreach (double a in passResult)
+                sum += a;
+
+            NetworkValue = DenseVector.OfArray(new double[] { sum });
+            ActivateNeuron(NetworkValue);
+        }
+
+        private void ActivateNeuron(Vector<double> networkResult)
+        {
+            OutputValue = Sigmoid(networkResult);
+        }
+
+        private Vector<double> Sigmoid(Vector<double> vector)
+        {
+            
+            return 1 / (1 + MathNet.Numerics.LinearAlgebra.Double.Vector.Exp(-vector));
+        }
+
+        public void SetDelta(Vector<double> nextLayerDelta, Matrix<double> weights)
+        {
+            Matrix<double> transWeights = weights.Transpose();
+            Delta = (nextLayerDelta * transWeights) * (Sigmoid(NetworkValue) * (1 - Sigmoid(NetworkValue)));
         }
     }
 }

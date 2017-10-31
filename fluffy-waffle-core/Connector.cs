@@ -18,12 +18,12 @@ namespace fluffy_waffle_core
         protected override Shape _shape { get; set; }
         Point From { get; set; }
         Point To { get; set; }
-        double Weight;
+        public double Value;
 
         public Connector(Point from, Point to, double weight)
         {
             _shape = new Line();
-            Weight = weight;
+            Value = weight;
 
             // middle of line
             SetLineColor(Colors.HotPink);

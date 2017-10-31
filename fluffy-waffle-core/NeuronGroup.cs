@@ -16,10 +16,11 @@ namespace fluffy_waffle_core
     public class NeuronGroup : IValuable
     {
         public List<Neuron> Group { get; set; }
+        public Vector<double> Value { get; set; }
         public Vector<double> NetworkValue { get; set; }
         public Vector<double> OutputValue { get; set; }
         public Vector<double> Delta { get; set; }
-        public List<(IValuable, Branch)> ConnectList { get; set; }
+        public List<double> list;
         public int Size { get; set; }
 
         public List<bool> IsActivated;
@@ -27,6 +28,7 @@ namespace fluffy_waffle_core
         public NeuronGroup()
         {
             Group = new List<Neuron>();
+            list = new List<double>();
             Size = 0;
             IsActivated = new List<bool>();
             NetworkValue = null;
@@ -34,61 +36,31 @@ namespace fluffy_waffle_core
             Delta = null;
         }
 
-        public void PassTo(IValuable target)
+        public void PassTo(IValuable target, Branch branch)
         {
-            throw new NotImplementedException();
+            target.Value = branch.Weight * Value;
         }
 
-        public bool Connect(IValuable target)
+        public Branch Connect(IValuable target)
         {
-            // if already connected 
-            foreach ((IValuable valuable, Branch _) in ConnectList)
-            {
-                if (valuable.Equals(target))
-                    return false;
-            }
-            Branch branch = new Branch();
-            branch.Connect(this, target);
-            ConnectList.Add((target, branch));
-            return true;
+            Branch branch = new Branch(this, target);
+            return branch;
         }
 
         public void AddNeuron(Neuron neuron)
         {
-            neuron.SetFillColor(Colors.Yellow);
             Group.Add(neuron);
+            list.Add(neuron.Value[0]);
+            Value = DenseVector.OfArray(list.ToArray());
             Size += 1;
-        }
-
-        public Vector<double> GetGroupVector()
-        {
-            double[] vector = (from neuron in Group
-                               select neuron.Value).ToArray();
-            return DenseVector.OfArray(vector);
         }
 
         public void SetValue(Vector<double> passResult)
         {
             NetworkValue = passResult;
             ActivateNeuron(passResult);
-
-            for (int i = 0; i < Group.Count; i++)
-            {
-                Group[i].NetworkValue = NetworkValue[i];
-                Group[i].OutputValue = OutputValue[i];
-            }
-
-            SetNeuronValue();
         }
-
-        private void SetNeuronValue()
-        {
-            for(int i = 0; i < OutputValue.Count; i++)
-            {
-                Group[i].OutputValue = OutputValue[i];
-            }
-        }
-
+      
         private void ActivateNeuron(Vector<double> networkResult)
         {
             OutputValue = Sigmoid(networkResult);
@@ -104,7 +76,5 @@ namespace fluffy_waffle_core
             Matrix<double> transWeights = weights.Transpose();
             Delta = (nextLayerDelta * transWeights) * (Sigmoid(NetworkValue) * (1 - Sigmoid(NetworkValue)));
         }
-
-        
     }
 }

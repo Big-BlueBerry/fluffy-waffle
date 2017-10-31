@@ -15,8 +15,8 @@ namespace fluffy_waffle_core
 {
     public class Branch
     {
-        
         public Matrix<double> Weight { get; set; }
+        public Matrix<double> UpdateWeight { get; set; }
         public Connector[,] Web;
 
         public IValuable From { get; set; }
@@ -58,6 +58,26 @@ namespace fluffy_waffle_core
                 return new List<Neuron>() { (Neuron)valuable };
             else
                 return ((NeuronGroup)valuable).Group;
+        }
+
+        public void WeightUpdate()
+        {
+            Weight = UpdateWeight;
+            for (int i = 0; i < Weight.RowCount; i++)
+            {
+                for (int j = 0; j < Weight.ColumnCount; j++)
+                {
+                    Web[i, j].Value = Weight[i, j];
+                }
+            }
+        }
+
+        public void BackPropagation(Vector<double> output, Vector<double> delta)
+        {
+            Matrix<double> matOutput = DenseMatrix.OfColumnVectors(output);
+            Matrix<double> matDelta = DenseMatrix.OfRowVectors(delta);
+
+            UpdateWeight = Weight - matOutput * matDelta;
         }
     }
 }

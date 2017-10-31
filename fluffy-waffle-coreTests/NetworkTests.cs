@@ -23,26 +23,21 @@ namespace fluffy_waffle_core.Tests
             group1.AddNeuron(new Neuron(new Vector(100, 100)));
             group1.AddNeuron(new Neuron(new Vector(200, 200)));
 
-            NeuronGroup group2 = new NeuronGroup();
-            group2.AddNeuron(new Neuron(new Vector(300, 300)));
-            group2.AddNeuron(new Neuron(new Vector(400, 400)));
+            Neuron group2 = new Neuron(new Vector(500, 500));
 
-            NeuronGroup group3 = new NeuronGroup();
-            group3.AddNeuron(new Neuron(new Vector(500, 500)));
-            group3.AddNeuron(new Neuron(new Vector(600, 600)));
+            Branch branch1 = group1.Connect(group2);
 
             model.AddLayer(group1);
             model.AddLayer(group2);
-            model.AddLayer(group3);
-            model.AddBridge(new Bridge());
-            model.AddBridge(new Bridge());
-
-            model.Build();
+            model.AddBranch(branch1);
+            
             model.FowardPass();
-            Debug.WriteLine(model.Layers[2].NetworkValue);
-            model.BackPropagation(DenseVector.OfArray(new Double[] { 0, 4 }));
+            Debug.WriteLine(model.Layers[0].NetworkValue);
+            Debug.WriteLine(model.Layers[1].NetworkValue);
+            model.BackPropagation(DenseVector.OfArray(new Double[] { 3 }));
             model.FowardPass();
-            Debug.WriteLine(model.Layers[2].NetworkValue);
+            Debug.WriteLine(model.Layers[0].NetworkValue);
+            Debug.WriteLine(model.Layers[1].NetworkValue);
         }
     }
 }
