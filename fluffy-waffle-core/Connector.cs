@@ -31,16 +31,18 @@ namespace fluffy_waffle_core
             SetAnimationColor(Colors.Honeydew);
         }
 
-        public void SetLineStart()
+        public void SetLineStart(Point point)
         {
-            ((Line)_shape).X1 = this.From.X;
-            ((Line)_shape).Y1 = this.From.Y;
+            From = point;
+            ((Line)_shape).X1 = point.X;
+            ((Line)_shape).Y1 = point.Y;
         }
 
-        public void SetLineEnd()
+        public void SetLineEnd(Point point)
         {
-            ((Line)_shape).X2 = this.To.X;
-            ((Line)_shape).Y2 = this.To.Y;
+            To = point;
+            ((Line)_shape).X2 = point.X;
+            ((Line)_shape).Y2 = point.Y;
         }
     }
 }

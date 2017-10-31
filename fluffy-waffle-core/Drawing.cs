@@ -27,6 +27,16 @@ namespace fluffy_waffle_core
             _text = new TextBlock();
         }
 
+        public void Move(double left, double top, double right, double bottom)
+        {
+            _shape.Margin = new Thickness(
+                        _shape.Margin.Left + left,
+                        _shape.Margin.Top + top,
+                        _shape.Margin.Right + right,
+                        _shape.Margin.Bottom + bottom
+                    );
+        }
+
         public void MoveText(Vector position)
         {
             _text.Margin = new Thickness(position.X, position.Y, 0, 0);
