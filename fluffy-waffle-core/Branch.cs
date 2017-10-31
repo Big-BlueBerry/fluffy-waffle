@@ -7,91 +7,77 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Shapes;
-using System.Windows.Media.Animation;
-
+using MathNet.Numerics.LinearAlgebra;
+using MathNet.Numerics.LinearAlgebra.Double;
+using MathNet.Numerics.Distributions;
 
 namespace fluffy_waffle_core
 {
-    public class Branch : IDrawable
+    public class Branch
     {
-        private TextBlock _text { get; set; }
-        private Line _line{ get; set; }
-        public UIElement Control => _line;
-        public UIElement TextControl => _text;
-        public Vector Position { get; set; }
-        public Double Weight { get; set; }
+        public Matrix<double> Weight { get; set; }
+        public Matrix<double> UpdateWeight { get; set; }
+        public Connector[,] Web;
 
-        public Neuron Start { get; set; }
-        public Neuron End { get; set; }
+        public IValuable From { get; set; }
+        public IValuable To { get; set; }
+
+        public Branch(IValuable from, IValuable to)
+        {
+            From = from;
+            To = to;
+            Web = new Connector[from.Size, to.Size];
+            Weight = Matrix<double>.Build.Random(from.Size, to.Size, new Gamma(1, 2.0));
+            Weight -= 1;
+
+            ConnectWeb();
+        }
         
-        public Branch(Neuron start, Neuron end)
+        private void ConnectWeb()
         {
-            Weight = new Random().NextDouble();
-            _line = new Line();
-            _text = new TextBlock();
-            Start = start;
-            End = end;
-            // middle of line
-            Position = (Start.Position + End.Position) / 2.0;
+            List<Neuron> firstList = GetNeurons(From);
+            List<Neuron> secondList = GetNeurons(To);
 
-            SetLineStart();
-            SetLineEnd();
-            
-            SetBranchColor(Colors.HotPink);
-            SetText();
-            SetTextColor(Colors.Black);
-            TextMove();
+            for(int i = 0; i < firstList.Count; i++)
+            {
+                for(int j = 0; j < secondList.Count; j++)
+                {
+                    Connector connector = new Connector(
+                        (Point)firstList[i].Position, 
+                        (Point)secondList[j].Position, 
+                        Weight[i,j]
+                        );
+                    Web[i, j] = connector;
+                }
+            }
         }
 
-        public void SetLineStart()
+        private List<Neuron> GetNeurons(IValuable valuable)
         {
-            _line.X1 = this.Start.Position.X;
-            _line.Y1 = this.Start.Position.Y;
-            TextMove();
+            if (valuable is Neuron)
+                return new List<Neuron>() { (Neuron)valuable };
+            else
+                return ((NeuronGroup)valuable).Group;
         }
 
-        public void SetLineEnd()
+        public void WeightUpdate()
         {
-            _line.X2 = this.End.Position.X;
-            _line.Y2 = this.End.Position.Y;
-            TextMove();
+            Weight = UpdateWeight;
+            for (int i = 0; i < Weight.RowCount; i++)
+            {
+                for (int j = 0; j < Weight.ColumnCount; j++)
+                {
+                    Web[i, j].Value = Weight[i, j];
+                }
+            }
         }
 
-        public void SetBranchColor(Color c)
+        public void BackPropagation(Vector<double> output, Vector<double> delta)
         {
-            SolidColorBrush branchColor = new SolidColorBrush() { Color = c };
-            // 원래 색깔변하는 코드
-            _line.Dispatcher.Invoke(() => { _line.Stroke = branchColor; });
-        }
+            Matrix<double> matOutput = DenseMatrix.OfColumnVectors(output);
+            Matrix<double> matDelta = DenseMatrix.OfRowVectors(delta);
 
-        public void BranchAnimation(Color c)
-        {
-            ColorAnimation animation = new ColorAnimation(c, new Duration(new TimeSpan(0, 0, 1)));
-            _line.Stroke.BeginAnimation(SolidColorBrush.ColorProperty, animation);
-        }
-
-        public void SetTextColor(Color c)
-        {
-            SolidColorBrush textColor = new SolidColorBrush() { Color = c };
-            _text.Dispatcher.Invoke(() => { _text.Foreground = textColor; });
-        }
-
-        public void SetText()
-        {
-            this._text.Text = String.Format("{0:0.###}", Weight);
-        }
-
-        public void TextMove()
-        {
-            this._text.Margin = new Thickness(
-                Position.X,
-                Position.Y,
-                0, 0);
-        }
-
-        public void Propagation()
-        {
-            this.End.Value = (this.Start.Value * this.Weight) + this.End.Value;
+            UpdateWeight = Weight - matOutput * matDelta;
         }
     }
 }

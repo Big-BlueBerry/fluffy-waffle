@@ -5,100 +5,71 @@ using System.Windows;
 using System.Windows.Media;
 using System.Windows.Shapes;
 using System.Windows.Controls;
+using MathNet.Numerics.LinearAlgebra;
+using MathNet.Numerics.LinearAlgebra.Double;
 
+using Vector = System.Windows.Vector;
 using Timer = System.Windows.Threading.DispatcherTimer;
 
 namespace fluffy_waffle_core
 {
-    public class Neuron : IDrawable
+    public class Neuron : Drawing, IValuable
     {
-        public List<(Neuron neuron, Branch branch)> InputBranch;
-        public List<(Neuron neuron, Branch branch)> OutputBranch;
+        private List<Connector> _start { get; set; }
+        private List<Connector> _end { get; set; }
+        public List<(IValuable, Branch)> ConnectList { get; set; }
 
-        private Ellipse _shape;
-        private TextBlock _text;
-        public UIElement Control => _shape;
-        public UIElement TextControl => _text;
-        public Vector Position { get; set; }
-        public Double Value { get; set; }
+        protected override Shape _shape { get; set; }
+        public int Size { get; set; }
+
+        public Vector<double> Value { get; set; }
+        public Vector<double> NetworkValue { get; set; }
+        public Vector<double> OutputValue { get; set; }
+        public Vector<double> Delta { get; set; }
 
         public bool IsNeuronClicked;
         public Point NeuronFirstPosition;
 
-        private Timer _timer;        
-
         public Neuron(Vector pos)
         {
-            InputBranch = new List<(Neuron neuron, Branch branch)>();
-            OutputBranch = new List<(Neuron neuron, Branch branch)>();
-
             // 초기 세팅, Value 는 test용
-            _text = new TextBlock();
             Position = pos;
-            Value = 1;
-            InitTimer();
+            Value = DenseVector.OfArray(new double[] { 1 });
+            Size = 1;
+            
+            _start = new List<Connector>();
+            _end = new List<Connector>();
 
             _shape = new Ellipse();
-            _shape.SetCircle(Position, 30);
-            _shape.Stroke = Brushes.Blue;
-            _shape.Fill = Brushes.White;
-            _shape.Tag = this;
-            
+            ((Ellipse)_shape).SetCircle(Position, 30);
+            ((Ellipse)_shape).Tag = this;
+            SetLineColor(Colors.Blue);
+            SetFillColor(Colors.White);
+
             InitDrag();
-            SetText();
-            MoveText();
         }
 
-        private void InitTimer()
+        public void PassTo(IValuable target, Branch branch)
         {
-            _timer = new Timer();
-            _timer.Interval = new TimeSpan(0, 0, 1);
-            _timer.Tick += PropagationToOutputBranches;
+            target.Value = branch.Weight * Value;
         }
 
-        public void AppendInputBranch(Neuron neuron, Branch branch)
+        public Branch Connect(IValuable target)
         {
-            this.InputBranch.Add((neuron, branch));
+            Branch branch = new Branch(this, target);
+            return branch;
+        }
+
+        public void AppendStartConn(Connector connector)
+        {
+            _start.Add(connector);
+        }
+
+        public void AppendEndConn(Connector connector)
+        {
+            _end.Add(connector);
         }
         
-        public void AppendOutputBranch(Neuron neuron, Branch branch)
-        {
-            this.OutputBranch.Add((neuron, branch));          
-        }
-
-        public void Propagation()
-        {
-            this._timer.Start();
-
-            foreach ((Neuron neuron, Branch branch) in this.OutputBranch)
-            {
-                branch.Propagation();
-                branch.BranchAnimation(Colors.Aqua);
-                neuron.SetText();
-            }
-        }
-
-        private void PropagationToOutputBranches(object sender, EventArgs e)
-        {
-            _timer.Stop();
-            
-            foreach ((Neuron neuron, Branch branch) in this.OutputBranch)
-            {
-                neuron.Propagation();
-                branch.BranchAnimation(Colors.HotPink);
-            }
-        }
-
-        public bool IsNeuronInputBranch(Neuron neuron)
-        {
-            return InputBranch.Any((t) => t.neuron == neuron);
-        }
-
-        public bool IsNeuronOutputBranch(Neuron neuron)
-        {
-            return OutputBranch.Any((t) => t.neuron == neuron);
-        }
-
         public void InitDrag()
         {
             _shape.MouseLeftButtonDown += (s, e) =>
@@ -115,41 +86,53 @@ namespace fluffy_waffle_core
             {
                 if (!this.IsNeuronClicked) return;
                 var delta = e.GetPosition(_shape) - NeuronFirstPosition;
-                _shape.Margin = new Thickness(
-                        _shape.Margin.Left + delta.X,
-                        _shape.Margin.Top + delta.Y,
-                        _shape.Margin.Right + delta.X,
-                        _shape.Margin.Bottom + delta.Y
-                    );
-                Point newPoint = new Point();
-                newPoint.X = delta.X;
-                newPoint.Y = delta.Y;
 
-                this.Position += (Vector)newPoint;
-                MoveText();
-                foreach ((Neuron neuron, Branch branch) in InputBranch)
-                {
-                    branch.SetLineEnd();
-                }
-                foreach ((Neuron neuron, Branch branch) in OutputBranch)
-                {
-                    branch.SetLineStart();
-                }
+                Position += new Vector(delta.X, delta.Y);
+
+                Move(delta.X, delta.Y, delta.X, delta.Y);
+                MoveText(Position);
+                MoveConnector();
             };
         }
 
-        private void SetText()
+        private void MoveConnector()
         {
-            
-            _text.Text = String.Format("{0:0.###}", Value);
+            foreach (Connector conn in _start)
+            {
+                conn.SetLineStart((Point)this.Position);
+            }
+
+            foreach (Connector conn in _end)
+            {
+                conn.SetLineEnd((Point)this.Position);
+            }
         }
 
-        private void MoveText()
+        public void SetValue(Vector<double> passResult)
         {
-            _text.Margin = new Thickness(
-                Position.X,
-                Position.Y,
-                0, 0);
+            double sum = 0;
+            foreach (double a in passResult)
+                sum += a;
+
+            NetworkValue = DenseVector.OfArray(new double[] { sum });
+            ActivateNeuron(NetworkValue);
+        }
+
+        private void ActivateNeuron(Vector<double> networkResult)
+        {
+            OutputValue = Sigmoid(networkResult);
+        }
+
+        private Vector<double> Sigmoid(Vector<double> vector)
+        {
+            
+            return 1 / (1 + MathNet.Numerics.LinearAlgebra.Double.Vector.Exp(-vector));
+        }
+
+        public void SetDelta(Vector<double> nextLayerDelta, Matrix<double> weights)
+        {
+            Matrix<double> transWeights = weights.Transpose();
+            Delta = (nextLayerDelta * transWeights) * (Sigmoid(NetworkValue) * (1 - Sigmoid(NetworkValue)));
         }
     }
 }
