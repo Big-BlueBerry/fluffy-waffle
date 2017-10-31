@@ -12,12 +12,14 @@ namespace fluffy_waffle_core
      * layer(neuron group) 와 layer 사이에는 모든 bridge만 가능하다. 
      * bridge에서 branch와 행렬인 layer와 layer를 연결하는 가중치 값 Weight를 가지고 있다.
      */ 
-    public class Bridge
+    public class Bridge : IConnectable
     {
         public Branch[,] Branches { get; set; }
         public Matrix<double> Weights { get; set; }
         public Matrix<double> UpdateWeights { get; set; }
-        
+        public IValuable From { get; set; }
+        public IValuable To { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+
         public void BuildBridge(NeuronGroup first, NeuronGroup second)
         {
             Branches = new Branch[first.Group.Count, second.Group.Count];
@@ -57,6 +59,11 @@ namespace fluffy_waffle_core
                     Branches[i, j].Weight = Weights[i, j];
                 }
             }
+        }
+
+        public void Connect(IValuable from, IValuable to)
+        {
+            throw new NotImplementedException();
         }
     }
 }

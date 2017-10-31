@@ -15,44 +15,57 @@ namespace fluffy_waffle_core
     {
         public ColorAnimation Animation;
         public Color AnimationColor;
-        public Color FillColor;
         protected TextBlock _text;
-        protected Shape _shape;
+        abstract protected Shape _shape { get; set; }
 
         public Vector Position { get; set; }
         public UIElement Control => _shape;
-        public UIElement TextControl => _text; 
+        public UIElement TextControl => _text;
 
         public Drawing()
         {
-            FillColor = Colors.Aqua;
-            AnimationColor = Colors.LightBlue;
-            ChangeAnimationColor(AnimationColor);
             _text = new TextBlock();
         }
 
-        protected void MoveText(double x, double y)
+        public void MoveText(Vector position)
         {
-            _text.Margin = new Thickness(x, y, 0, 0);
+            _text.Margin = new Thickness(position.X, position.Y, 0, 0);
         }
 
-        protected void SetText(double value)
+        public void SetText(double value)
         {
             _text.Text = String.Format("{0:0.###}", value);
         }
 
-        protected void BeginAnimation(DependencyProperty property)
+        public void SetTextColor(Color c)
         {
-            _shape.BeginAnimation(property, Animation);
+            _text.Dispatcher.Invoke(() => { _text.Foreground = new SolidColorBrush(c); });
+
         }
 
-        public void ChangeAnimationColor(Color color)
+        public void SetLineColor(Color c)
+        {
+            _shape.Dispatcher.Invoke(() => { _shape.Stroke = new SolidColorBrush(c); });
+
+        }
+
+        public void SetFillColor(Color color)
+        {
+            _shape.Fill = new SolidColorBrush(color);
+        }
+
+        public void SetAnimationColor(Color color)
         {
             AnimationColor = color;
             Animation = new ColorAnimation(AnimationColor, new Duration(new TimeSpan(0, 0, 0, 0, 500)))
             {
                 AutoReverse = true
             };
+        }
+
+        protected void BeginAnimation(DependencyProperty property)
+        {
+            _shape.BeginAnimation(property, Animation);
         }
     }
 }

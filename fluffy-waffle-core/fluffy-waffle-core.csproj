@@ -54,8 +54,8 @@
     <Compile Include="Bridge.cs" />
     <Compile Include="Drawing.cs" />
     <Compile Include="IConnectable.cs" />
-    <Compile Include="IValuable.cs" />
     <Compile Include="IDrawable.cs" />
+    <Compile Include="IValuable.cs" />
     <Compile Include="Network.cs" />
     <Compile Include="Neuron.cs" />
     <Compile Include="NeuronGroup.cs" />

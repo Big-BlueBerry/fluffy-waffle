@@ -10,16 +10,15 @@ using Timer = System.Windows.Threading.DispatcherTimer;
 
 namespace fluffy_waffle_core
 {
-    public class Neuron : Drawing, IDrawable
+    public class Neuron : Drawing, IValuable
     {
         public List<(Neuron neuron, Branch branch)> InputBranch;
         public List<(Neuron neuron, Branch branch)> OutputBranch;
 
-        private Ellipse _shape;
-        public UIElement Control => _shape;
-        public UIElement TextControl => _text;
-        public Vector Position { get; set; }
+        protected override Shape _shape { get; set; }
         public Double Value { get; set; }
+        public List<(IValuable, IConnectable)> ConnectList { get; set; }
+
         public Double NetworkValue;
         public Double OutputValue;
 
@@ -34,28 +33,20 @@ namespace fluffy_waffle_core
             OutputBranch = new List<(Neuron neuron, Branch branch)>();
 
             // 초기 세팅, Value 는 test용
-            _text = new TextBlock();
             Position = pos;
             Value = 1;
             InitTimer();
-
-            _shape = new Ellipse();
-            _shape.SetCircle(Position, 30);
-            _shape.Stroke = Brushes.Blue;
-            _shape.Fill = Brushes.White;
-            _shape.Tag = this;
             
+            _shape = new Ellipse();
+            ((Ellipse)_shape).SetCircle(Position, 30);
+            ((Ellipse)_shape).Tag = this;
+            SetLineColor(Colors.Blue);
+            SetFillColor(Colors.White);
+
             InitDrag();
-            SetText();
-            MoveText();
         }
 
-        private void InitTimer()
-        {
-            _timer = new Timer();
-            _timer.Interval = new TimeSpan(0, 0, 1);
-            _timer.Tick += FowardPassToOutputBranches;
-        }
+
 
         public void AppendInputBranch(Neuron neuron, Branch branch)
         {
@@ -64,41 +55,38 @@ namespace fluffy_waffle_core
             if (Value == 1)
                 Value = 0;
         }
-        
+
         public void AppendOutputBranch(Neuron neuron, Branch branch)
         {
             this.OutputBranch.Add((neuron, branch));
         }
 
-        public void PassTo(Neuron neuron)
+        public void PassTo(IValuable connectable)
         {
 
         }
 
-        public void PassTo(NeuronGroup group)
+        public bool Connect(IValuable target)
         {
-
-        }
-        public void FowardPass()
-        {
-            this._timer.Start();
-
-            foreach ((Neuron neuron, Branch branch) in this.OutputBranch)
+            // if already connected 
+            foreach ((IValuable valuable, IConnectable connectable) in ConnectList)
             {
-                branch.FowardPass();
-                branch.BranchAnimation(Colors.Aqua);
-                neuron.SetText();
+                if (valuable.Equals(target))
+                    return false;
             }
-        }
-
-        private void FowardPassToOutputBranches(object sender, EventArgs e)
-        {
-            _timer.Stop();
-            
-            foreach ((Neuron neuron, Branch branch) in this.OutputBranch)
+            if(target is Neuron)
             {
-                neuron.FowardPass();
+                Branch branch = new Branch();
+                branch.Connect(this, target);
+                ConnectList.Add((target, branch));
             }
+            else
+            {
+                Bridge bridge = new Bridge();
+                bridge.Connect(this, target);
+                ConnectList.Add((target, bridge));
+            }
+            return true;
         }
 
         public bool IsNeuronInputBranch(Neuron neuron)
@@ -138,7 +126,7 @@ namespace fluffy_waffle_core
                 newPoint.Y = delta.Y;
 
                 this.Position += (Vector)newPoint;
-                MoveText();
+                MoveText(Position);
                 foreach ((Neuron neuron, Branch branch) in InputBranch)
                 {
                     branch.SetLineEnd();
@@ -150,22 +138,14 @@ namespace fluffy_waffle_core
             };
         }
 
-        private void SetText()
+        private void InitTimer()
         {
-            _text.Text = String.Format("{0:0.###}", Value);
-        }
+            _timer = new Timer()
+            {
+                Interval = new TimeSpan(0, 0, 1)
+            };
 
-        private void MoveText()
-        {
-            _text.Margin = new Thickness(
-                Position.X,
-                Position.Y,
-                0, 0);
-        }
-
-        public void SetColor(Color color)
-        {
-            _shape.Fill = new SolidColorBrush(color);
+            _timer.Tick += FowardPassToOutputBranches;
         }
     }
 }

@@ -13,12 +13,14 @@ namespace fluffy_waffle_core
      * 이 뉴런 그룹을 통해 다른 그룹 혹은 Bridge과 상호작용한다.
      * network value는 activate하기 전 값이고, 미분할 때 편하게 하기 위해서 생성하였다.
      */
-    public class NeuronGroup
+    public class NeuronGroup : IValuable
     {
         public List<Neuron> Group { get; set; }
         public Vector<double> NetworkValue { get; set; }
         public Vector<double> OutputValue { get; set; }
         public Vector<double> Delta { get; set; }
+        public List<IValuable> ConnectList { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+
         public List<bool> IsActivated;
 
         public NeuronGroup()
@@ -30,9 +32,19 @@ namespace fluffy_waffle_core
             Delta = null;
         }
 
+        public void PassTo(IValuable target)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool Connect(IValuable target)
+        {
+            throw new NotImplementedException();
+        }
+
         public void AddNeuron(Neuron neuron)
         {
-            neuron.SetColor(Colors.Yellow);
+            neuron.SetFillColor(Colors.Yellow);
             Group.Add(neuron);
         }
 
@@ -80,5 +92,7 @@ namespace fluffy_waffle_core
             Matrix<double> transWeights = weights.Transpose();
             Delta = (nextLayerDelta * transWeights) * (Sigmoid(NetworkValue) * (1 - Sigmoid(NetworkValue)));
         }
+
+        
     }
 }

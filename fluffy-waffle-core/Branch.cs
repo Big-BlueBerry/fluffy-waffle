@@ -11,59 +11,46 @@ using System.Windows.Media.Animation;
 
 namespace fluffy_waffle_core
 {
-    public class Branch : Drawing
+    public class Branch : Drawing, IConnectable
     {
-        private Line _line{ get; set; }
+        protected override Shape _shape { get; set; }
         public Double Weight { get; set; }
 
-        public Neuron Start { get; set; }
-        public Neuron End { get; set; }
+        public Neuron From { get; set; }
+        public Neuron To { get; set; }
+        IValuable IConnectable.From { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        IValuable IConnectable.To { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
         public Branch()
         {
             Weight = new Random(unchecked((int)DateTime.Now.Ticks)).NextDouble() * 2 - 1;
-            _line = new Line();
+            _shape = new Line();
 
             // middle of line
-            SetBranchColor(Colors.HotPink);
+            SetLineColor(Colors.HotPink);
             SetTextColor(Colors.Black);
         }
-
-        public bool Connect(IValuable from, IValuable to)
-        {
-            
-            throw new NotImplementedException();
-        }
-
+        
         public void SetLineStart()
         {
-            _line.X1 = this.Start.Position.X;
-            _line.Y1 = this.Start.Position.Y;
+            ((Line)_shape).X1 = this.From.Position.X;
+            ((Line)_shape).Y1 = this.From.Position.Y;
         }
 
         public void SetLineEnd()
         {
-            _line.X2 = this.End.Position.X;
-            _line.Y2 = this.End.Position.Y;
-        }
-
-        public void SetBranchColor(Color c)
-        {
-            SolidColorBrush branchColor = new SolidColorBrush() { Color = c };
-            // 원래 색깔변하는 코드
-            _line.Dispatcher.Invoke(() => { _line.Stroke = branchColor; });
+            ((Line)_shape).X2 = this.To.Position.X;
+            ((Line)_shape).Y2 = this.To.Position.Y;
         }
         
-        public void SetTextColor(Color c)
+        public double FowardPass()
         {
-            SolidColorBrush textColor = new SolidColorBrush() { Color = c };
-            _text.Dispatcher.Invoke(() => { _text.Foreground = textColor; });
+            return Weight * From.Value;
         }
-        
 
-        public void FowardPass()
+        public void Connect(IValuable from, IValuable to)
         {
-            this.End.Value += this.Start.Value * this.Weight;
+            throw new NotImplementedException();
         }
     }
 }
