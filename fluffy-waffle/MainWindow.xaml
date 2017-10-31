@@ -6,11 +6,7 @@
         xmlns:local="clr-namespace:fluffy_waffle"
         mc:Ignorable="d"
         Title="MainWindow" Height="350" Width="525">
-    <Window.Resources>
-        <ColorAnimation x:Key="LineAnimation">
-            
-        </ColorAnimation>
-    </Window.Resources>
+    
     <Grid>
         <Canvas Name="ShapeCanvas" MouseLeftButtonDown="ShapeCanvas_MouseLeftButtonDown" Background="White">
             <Button Content="Add Neuron" Name="AddNeuronBtn" Canvas.Left="432" Canvas.Top="289" Width="75"/>
