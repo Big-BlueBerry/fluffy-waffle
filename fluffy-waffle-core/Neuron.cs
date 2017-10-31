@@ -16,8 +16,9 @@ namespace fluffy_waffle_core
         public List<(Neuron neuron, Branch branch)> OutputBranch;
 
         protected override Shape _shape { get; set; }
+        public List<(IValuable, Branch)> ConnectList { get; set; }
+        public int Size { get; set; }
         public Double Value { get; set; }
-        public List<(IValuable, IConnectable)> ConnectList { get; set; }
 
         public Double NetworkValue;
         public Double OutputValue;
@@ -35,8 +36,11 @@ namespace fluffy_waffle_core
             // 초기 세팅, Value 는 test용
             Position = pos;
             Value = 1;
+            Size = 1;
             InitTimer();
-            
+
+            ConnectList = new List<(IValuable, Branch)>();
+
             _shape = new Ellipse();
             ((Ellipse)_shape).SetCircle(Position, 30);
             ((Ellipse)_shape).Tag = this;
@@ -45,8 +49,6 @@ namespace fluffy_waffle_core
 
             InitDrag();
         }
-
-
 
         public void AppendInputBranch(Neuron neuron, Branch branch)
         {
@@ -69,23 +71,15 @@ namespace fluffy_waffle_core
         public bool Connect(IValuable target)
         {
             // if already connected 
-            foreach ((IValuable valuable, IConnectable connectable) in ConnectList)
+            foreach ((IValuable valuable, Branch _) in ConnectList)
             {
                 if (valuable.Equals(target))
                     return false;
             }
-            if(target is Neuron)
-            {
-                Branch branch = new Branch();
-                branch.Connect(this, target);
-                ConnectList.Add((target, branch));
-            }
-            else
-            {
-                Bridge bridge = new Bridge();
-                bridge.Connect(this, target);
-                ConnectList.Add((target, bridge));
-            }
+
+            Branch branch = new Branch();
+            branch.Connect(this, target);
+            ConnectList.Add((target, branch));
             return true;
         }
 
@@ -145,7 +139,8 @@ namespace fluffy_waffle_core
                 Interval = new TimeSpan(0, 0, 1)
             };
 
-            _timer.Tick += FowardPassToOutputBranches;
+            // TODO
+            //_timer.Tick += FowardPassToOutputBranches;
         }
     }
 }

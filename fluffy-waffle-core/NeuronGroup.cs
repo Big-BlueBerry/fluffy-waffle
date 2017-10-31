@@ -19,13 +19,15 @@ namespace fluffy_waffle_core
         public Vector<double> NetworkValue { get; set; }
         public Vector<double> OutputValue { get; set; }
         public Vector<double> Delta { get; set; }
-        public List<IValuable> ConnectList { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public List<(IValuable, Branch)> ConnectList { get; set; }
+        public int Size { get; set; }
 
         public List<bool> IsActivated;
 
         public NeuronGroup()
         {
             Group = new List<Neuron>();
+            Size = 0;
             IsActivated = new List<bool>();
             NetworkValue = null;
             OutputValue = null;
@@ -39,13 +41,23 @@ namespace fluffy_waffle_core
 
         public bool Connect(IValuable target)
         {
-            throw new NotImplementedException();
+            // if already connected 
+            foreach ((IValuable valuable, Branch _) in ConnectList)
+            {
+                if (valuable.Equals(target))
+                    return false;
+            }
+            Branch branch = new Branch();
+            branch.Connect(this, target);
+            ConnectList.Add((target, branch));
+            return true;
         }
 
         public void AddNeuron(Neuron neuron)
         {
             neuron.SetFillColor(Colors.Yellow);
             Group.Add(neuron);
+            Size += 1;
         }
 
         public Vector<double> GetGroupVector()

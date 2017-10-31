@@ -7,50 +7,57 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Shapes;
-using System.Windows.Media.Animation;
+using MathNet.Numerics.LinearAlgebra;
+using MathNet.Numerics.LinearAlgebra.Double;
+using MathNet.Numerics.Distributions;
 
 namespace fluffy_waffle_core
 {
-    public class Branch : Drawing, IConnectable
+    public class Branch
     {
-        protected override Shape _shape { get; set; }
-        public Double Weight { get; set; }
+        
+        public Matrix<double> Weight { get; set; }
+        public Connector[,] Web;
 
-        public Neuron From { get; set; }
-        public Neuron To { get; set; }
-        IValuable IConnectable.From { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-        IValuable IConnectable.To { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public IValuable From { get; set; }
+        public IValuable To { get; set; }
 
-        public Branch()
+        public Branch(IValuable from, IValuable to)
         {
-            Weight = new Random(unchecked((int)DateTime.Now.Ticks)).NextDouble() * 2 - 1;
-            _shape = new Line();
+            From = from;
+            To = to;
+            Web = new Connector[from.Size, to.Size];
+            Weight = Matrix<double>.Build.Random(from.Size, to.Size, new Gamma(1, 2.0));
+            Weight -= 1;
 
-            // middle of line
-            SetLineColor(Colors.HotPink);
-            SetTextColor(Colors.Black);
+            ConnectWeb();
         }
         
-        public void SetLineStart()
+        private void ConnectWeb()
         {
-            ((Line)_shape).X1 = this.From.Position.X;
-            ((Line)_shape).Y1 = this.From.Position.Y;
+            List<Neuron> firstList = GetNeurons(From);
+            List<Neuron> secondList = GetNeurons(To);
+
+            for(int i = 0; i < firstList.Count; i++)
+            {
+                for(int j = 0; j < secondList.Count; j++)
+                {
+                    Connector connector = new Connector(
+                        (Point)firstList[i].Position, 
+                        (Point)secondList[j].Position, 
+                        Weight[i,j]
+                        );
+                    Web[i, j] = connector;
+                }
+            }
         }
 
-        public void SetLineEnd()
+        private List<Neuron> GetNeurons(IValuable valuable)
         {
-            ((Line)_shape).X2 = this.To.Position.X;
-            ((Line)_shape).Y2 = this.To.Position.Y;
-        }
-        
-        public double FowardPass()
-        {
-            return Weight * From.Value;
-        }
-
-        public void Connect(IValuable from, IValuable to)
-        {
-            throw new NotImplementedException();
+            if (valuable is Neuron)
+                return new List<Neuron>() { (Neuron)valuable };
+            else
+                return ((NeuronGroup)valuable).Group;
         }
     }
 }

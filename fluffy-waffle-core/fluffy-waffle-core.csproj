@@ -53,7 +53,6 @@
     <Compile Include="Branch.cs" />
     <Compile Include="Bridge.cs" />
     <Compile Include="Drawing.cs" />
-    <Compile Include="IConnectable.cs" />
     <Compile Include="IDrawable.cs" />
     <Compile Include="IValuable.cs" />
     <Compile Include="Network.cs" />

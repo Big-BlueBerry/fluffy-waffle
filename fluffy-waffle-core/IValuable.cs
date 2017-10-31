@@ -8,7 +8,8 @@ namespace fluffy_waffle_core
 {
     public interface IValuable
     {
-        List<IValuable> ConnectList { get; set; }
+        List<(IValuable, Branch)> ConnectList { get; set; }
+        int Size { get; set; }
 
         void PassTo(IValuable target);
         bool Connect(IValuable target);
