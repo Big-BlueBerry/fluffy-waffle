@@ -8,6 +8,8 @@
         Title="MainWindow" Height="350" Width="525">
     
     <Grid>
-        
+        <Canvas Name="canvas">
+            <Ellipse Name="ellipse" Height="100" Canvas.Left="292" Canvas.Top="165" Width="100" Stroke="Red" StrokeThickness="10"/>
+        </Canvas>
     </Grid>
 </Window>

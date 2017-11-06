@@ -1,36 +1,37 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Windows;
 
 namespace fluffy_waffle_core
 {
     public abstract class CompObject
     {
+        public UIElement Control;
         public Board Board;
         public string Name { get; set; }
-        private List<Component> _components;
+        private List<IComponent> _components;
 
-        public CompObject(Board board, string name)
+        public CompObject(UIElement control, Board board, string name)
         {
+            Control = control;
             Board = board;
             Name = name;
-            _components = new List<Component>();
+            _components = new List<IComponent>();
         }
 
-        public T GetComponent<T>() where T : Component
+        public T GetComponent<T>() where T : class, IComponent
         {
             foreach (var comp in _components)
             {
                 if (comp is T)
-                    return comp as T;
+                    return (T)comp;
             }
 
             return null;
         }
 
-        public T AddComponent<T>() where T : Component, new()
+        public T AddComponent<T>() where T : class, IComponent, new()
         {
             if (Attribute.GetCustomAttribute(typeof(T), typeof(SingleComponent)) != null)
                 if (_components.Any(c => c is T))
@@ -39,14 +40,14 @@ namespace fluffy_waffle_core
             return AddComponent(new T()) as T;
         }
 
-        protected Component AddComponent(Component t)
+        protected IComponent AddComponent(IComponent t)
         {
             t.Parent = this;
             _components.Add(t);
             return t;
         }
 
-        public void RemoveAllComponents<T>() where T : Component
+        public void RemoveAllComponents<T>() where T : IComponent
         {
             _components.RemoveAll(comp => comp is T);
         }

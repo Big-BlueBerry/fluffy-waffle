@@ -50,6 +50,8 @@
     <Compile Include="Board.cs" />
     <Compile Include="Component.cs" />
     <Compile Include="CompObject.cs" />
+    <Compile Include="Components\ILeftMouseComponent.cs" />
+    <Compile Include="Components\RenderableComponent.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ShapeHelper.cs" />
   </ItemGroup>

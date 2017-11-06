@@ -6,23 +6,12 @@ using System.Threading.Tasks;
 
 namespace fluffy_waffle_core
 {
-    public abstract class Component
+    public interface IComponent
     {
-        public CompObject Parent { get; set; }
-
-        public Component()
-        {
-
-        }
+        CompObject Parent { get; set; }
+        void Init();
     }
 
-    [AttributeUsage(AttributeTargets.Class)]
+    [AttributeUsage(AttributeTargets.Class | AttributeTargets.Interface)]
     public class SingleComponent : Attribute { }
-
-    [SingleComponent]
-    public class MoveCameraComponent : Component
-    {
-        ///
-    }
-
 }

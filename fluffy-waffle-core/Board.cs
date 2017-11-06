@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace fluffy_waffle_core
 {
-    public abstract class Board
+    public class Board
     {
         private List<CompObject> _compObjects;
 

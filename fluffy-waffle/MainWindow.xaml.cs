@@ -14,14 +14,44 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using fluffy_waffle_core;
+using fluffy_waffle_core.Components;
 
 namespace fluffy_waffle
 {
     public partial class MainWindow : Window
     {
+        Board board;
         public MainWindow()
         {
             InitializeComponent();
+
+            board = new Board();
+
+            var c = new MouseEventHandleCompObject(ellipse, board, "뀨");
+            c.AddComponent<ShapeRandomMoveSexComponent>().InitControls(canvas, ellipse);
+        }
+
+        public class MouseEventHandleCompObject : CompObject
+        {
+            public MouseEventHandleCompObject(Ellipse ellipse, Board board, string name) : base(ellipse, board, name)
+            {
+                ellipse.MouseLeftButtonDown += Ellipse_MouseLeftButtonDown;
+            }
+
+            private void Ellipse_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+            {
+                GetComponent<ILeftMouseComponent>()?.LeftMouseDown(sender, e);
+            }
+        }
+
+        public class ShapeRandomMoveSexComponent : RenderableComponent, ILeftMouseComponent
+        {
+            Random r = new Random();
+            void ILeftMouseComponent.LeftMouseDown(object sender, MouseEventArgs e)
+            {
+                Canvas.SetLeft(_control,  r.Next(0, (int)_parent.ActualWidth));
+                Canvas.SetTop(_control, r.Next(0, (int)_parent.ActualHeight));
+            }
         }
     }
 }
