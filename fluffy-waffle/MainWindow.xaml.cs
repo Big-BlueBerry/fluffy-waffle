@@ -27,8 +27,12 @@ namespace fluffy_waffle
 
             board = new Board();
 
-            var c = new MouseEventHandleCompObject(ellipse, board, "뀨");
-            c.AddComponent<ShapeRandomMoveSexComponent>().InitControls(canvas, ellipse);
+            // before
+            //var c = new MouseEventHandleCompObject(ellipse, board, "뀨");
+            //c.AddComponent<ShapeRandomMoveSexComponent>().InitControls(canvas, ellipse);
+
+            var c = new MouseEventHandleCompObject(ellipse, board, "의읭ㅇㅇ");
+            c.AddComponent<ShapeDragComponent>().InitControls(canvas, ellipse);
         }
 
         public class MouseEventHandleCompObject : CompObject
@@ -36,12 +40,22 @@ namespace fluffy_waffle
             public MouseEventHandleCompObject(Ellipse ellipse, Board board, string name) : base(ellipse, board, name)
             {
                 ellipse.MouseLeftButtonDown += Ellipse_MouseLeftButtonDown;
+                ellipse.MouseLeftButtonUp += Ellipse_MouseLeftButtonUp;
+                ellipse.MouseLeave += Ellipse_MouseLeave;
+                ellipse.MouseMove += Ellipse_MouseMove;
             }
 
             private void Ellipse_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
-            {
-                GetComponent<ILeftMouseComponent>()?.LeftMouseDown(sender, e);
-            }
+                => GetComponent<ILeftDragableComponent>()?.LeftMouseDown(sender, e);
+
+            private void Ellipse_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+                => GetComponent<ILeftDragableComponent>()?.LeftMouseUp(sender, e);
+
+            private void Ellipse_MouseLeave(object sender, MouseEventArgs e)
+                => GetComponent<ILeftDragableComponent>()?.MouseLeave(sender, e);
+
+            private void Ellipse_MouseMove(object sender, MouseEventArgs e)
+                => GetComponent<ILeftDragableComponent>()?.MouseMove(sender, e);
         }
 
         public class ShapeRandomMoveSexComponent : RenderableComponent, ILeftMouseComponent
