@@ -51,5 +51,11 @@ namespace fluffy_waffle_core
         {
             _components.RemoveAll(comp => comp is T);
         }
+
+        public void InitAllComponents()
+        {
+            foreach (IComponent component in _components)
+                component.Init();
+        }
     }
 }

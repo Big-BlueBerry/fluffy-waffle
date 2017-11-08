@@ -23,30 +23,43 @@ namespace fluffy_waffle_core.Components
         private bool _isClicked;
         private Point _firstPosition;
         
-        void ILeftMouseComponent.LeftMouseDown(object sender, MouseEventArgs e)
+        public void LeftMouseDown(object sender, MouseEventArgs e)
         {
-            _firstPosition = e.GetPosition(_control);
+            _firstPosition = e.GetPosition(_parent);
             _isClicked = true;
         }
 
-        void ILeftDragableComponent.LeftMouseUp(object sender, MouseEventArgs e)
+        public void LeftMouseUp(object sender, MouseEventArgs e)
         {
             _isClicked = false;
         }
 
-        void ILeftDragableComponent.MouseLeave(object sender, MouseEventArgs e)
+        public void MouseLeave(object sender, MouseEventArgs e)
         {
             if (_isClicked) _isClicked = false;
         }
 
-        void ILeftDragableComponent.MouseMove(object sender, MouseEventArgs e)
+        public void MouseMove(object sender, MouseEventArgs e)
         {
             if (!_isClicked) return;
 
             var pos = e.GetPosition(_parent);
-            
-            Canvas.SetLeft(_control, pos.X - _firstPosition.X);
-            Canvas.SetTop(_control, pos.Y - _firstPosition.Y);
+            SetPosition(pos - _firstPosition);
+        }
+
+        public new void InitControls(Panel panel, UIElement control)
+        {
+            _parent = panel;
+            _control = control;
+            InitMouseControl();
+        }
+
+        private void InitMouseControl()
+        {
+            _control.MouseLeftButtonDown += LeftMouseDown;
+            _control.MouseLeftButtonUp += LeftMouseUp;
+            _control.MouseLeave += MouseLeave;
+            _control.MouseMove += MouseMove;
         }
     }
 }

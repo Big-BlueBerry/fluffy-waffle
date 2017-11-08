@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace fluffy_waffle_core
 {
-    public interface IGroup
+    public interface IGroup : IConnectable
     {
-        List<IConnectable> MemberList { get; set; }
+        List<CompObject> MemberList { get; set; }
 
         void ExecuteAllMember();
     }

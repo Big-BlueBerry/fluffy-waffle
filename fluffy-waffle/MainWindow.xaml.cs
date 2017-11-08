@@ -20,12 +20,16 @@ namespace fluffy_waffle
 {
     public partial class MainWindow : Window
     {
+        private bool _isAddMode = false;
         Board board;
+        private List<CompObject> _objectList;
+
         public MainWindow()
         {
             InitializeComponent();
 
             board = new Board();
+            _objectList = new List<CompObject>();
 
             // before
             //var c = new MouseEventHandleCompObject(ellipse, board, "뀨");
@@ -38,33 +42,42 @@ namespace fluffy_waffle
         public class MouseEventHandleCompObject : CompObject
         {
             public MouseEventHandleCompObject(Ellipse ellipse, Board board, string name) : base(ellipse, board, name)
-            {
-                ellipse.MouseLeftButtonDown += Ellipse_MouseLeftButtonDown;
-                ellipse.MouseLeftButtonUp += Ellipse_MouseLeftButtonUp;
-                ellipse.MouseLeave += Ellipse_MouseLeave;
-                ellipse.MouseMove += Ellipse_MouseMove;
-            }
-
-            private void Ellipse_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
-                => GetComponent<ILeftDragableComponent>()?.LeftMouseDown(sender, e);
-
-            private void Ellipse_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
-                => GetComponent<ILeftDragableComponent>()?.LeftMouseUp(sender, e);
-
-            private void Ellipse_MouseLeave(object sender, MouseEventArgs e)
-                => GetComponent<ILeftDragableComponent>()?.MouseLeave(sender, e);
-
-            private void Ellipse_MouseMove(object sender, MouseEventArgs e)
-                => GetComponent<ILeftDragableComponent>()?.MouseMove(sender, e);
+            {}
         }
 
-        public class ShapeRandomMoveSexComponent : RenderableComponent, ILeftMouseComponent
+        private void Button_Click(object sender, RoutedEventArgs e)
         {
-            Random r = new Random();
-            void ILeftMouseComponent.LeftMouseDown(object sender, MouseEventArgs e)
+            _isAddMode = !_isAddMode;
+            if(_isAddMode)
             {
-                Canvas.SetLeft(_control,  r.Next(0, (int)_parent.ActualWidth));
-                Canvas.SetTop(_control, r.Next(0, (int)_parent.ActualHeight));
+                addingButton.Content = "cancel";
+                addingButton.Background = Brushes.HotPink;
+            }
+            else
+            {
+                addingButton.Content = "add";
+                addingButton.Background = Brushes.White;
+            }
+        }
+
+        private void Canvas_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            var pos = e.GetPosition(canvas);
+
+            if (_isAddMode)
+            {
+                Ellipse shape = new Ellipse()
+                {
+                    Fill = Brushes.Aqua,
+                    Stroke = Brushes.Black,
+                };
+                shape.SetCircle((Vector)pos, 30);
+
+                Neuron neuron = new Neuron(shape, board, 1, "test");
+                neuron.AddComponent<ShapeDragComponent>().InitControls(canvas, shape);
+                neuron.InitAllComponents();
+
+                _objectList.Add(neuron);
             }
         }
     }

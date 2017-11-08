@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace fluffy_waffle_core
 {
-    public interface IConnectable
+    public interface IConnectable : IComponent
     {
         void Connect(IConnectable target);
         bool IsConnected(IConnectable target);

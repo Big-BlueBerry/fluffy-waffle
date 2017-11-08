@@ -6,10 +6,12 @@
         xmlns:local="clr-namespace:fluffy_waffle"
         mc:Ignorable="d"
         Title="MainWindow" Height="350" Width="525">
-    
+
     <Grid>
-        <Canvas Name="canvas">
-            <Ellipse Name="ellipse" Height="100" Canvas.Left="292" Canvas.Top="165" Width="100" Stroke="Red" StrokeThickness="10"/>
+        <Canvas Name="canvas" MouseLeftButtonDown="Canvas_MouseLeftButtonDown" Background="White">
+            <Ellipse Name="ellipse" Height="100" Canvas.Left="292" Canvas.Top="165" Width="100" Stroke="Red" StrokeThickness="10" Fill="Yellow"/>
+            <Button Name="addingButton" Content="add" Canvas.Left="432" Canvas.Top="289" Width="75" Click="Button_Click"/>
+            
         </Canvas>
     </Grid>
 </Window>
