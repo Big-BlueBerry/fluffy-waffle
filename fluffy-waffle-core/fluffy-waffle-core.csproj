@@ -52,15 +52,17 @@
     <Compile Include="Branch.cs" />
     <Compile Include="Component.cs" />
     <Compile Include="CompObject.cs" />
+    <Compile Include="IConnect.cs" />
     <Compile Include="IConnectable.cs" />
     <Compile Include="Components\ILeftMouseDragComponent.cs" />
     <Compile Include="Components\ILeftMouseComponent.cs" />
     <Compile Include="IGroup.cs" />
     <Compile Include="IStepable.cs" />
     <Compile Include="Components\RenderableComponent.cs" />
-    <Compile Include="Neuron.cs" />
+    <Compile Include="Components\NeuronComponent.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ShapeHelper.cs" />
+    <Compile Include="Components\SynapseComponent.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
