@@ -25,7 +25,7 @@ namespace fluffy_waffle_core.Components
         
         public void LeftMouseDown(object sender, MouseEventArgs e)
         {
-            _firstPosition = e.GetPosition(_parent);
+            _firstPosition = e.GetPosition(ParentPanel);
             _isClicked = true;
         }
 
@@ -43,23 +43,23 @@ namespace fluffy_waffle_core.Components
         {
             if (!_isClicked) return;
 
-            var pos = e.GetPosition(_parent);
+            var pos = e.GetPosition(ParentPanel);
             SetPosition(pos - _firstPosition);
         }
 
         public new void InitControls(Panel panel, UIElement control)
         {
-            _parent = panel;
-            _control = control;
+            ParentPanel = panel;
+            Control = control;
             InitMouseControl();
         }
 
         private void InitMouseControl()
         {
-            _control.MouseLeftButtonDown += LeftMouseDown;
-            _control.MouseLeftButtonUp += LeftMouseUp;
-            _control.MouseLeave += MouseLeave;
-            _control.MouseMove += MouseMove;
+            Control.MouseLeftButtonDown += LeftMouseDown;
+            Control.MouseLeftButtonUp += LeftMouseUp;
+            Control.MouseLeave += MouseLeave;
+            Control.MouseMove += MouseMove;
         }
     }
 }

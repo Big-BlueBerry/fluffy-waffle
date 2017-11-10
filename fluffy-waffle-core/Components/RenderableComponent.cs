@@ -6,27 +6,29 @@ namespace fluffy_waffle_core.Components
     public abstract class RenderableComponent : IComponent
     {
         public CompObject Parent { get; set; }
-        private Vector _pos;
-        protected Panel _parent;
-        protected UIElement _control;
-
-        public void SetPosition(Vector pos)
+        private Vector _pos= new Vector();
+        public Vector Pos
         {
-            if (pos == null || _control == null) return;
-            _pos = pos;
-            Canvas.SetLeft(_control, _pos.X);
-            Canvas.SetTop(_control, _pos.Y);
+            get => _pos;
+            set
+            {
+                _pos = value;
+                Canvas.SetLeft(Control, _pos.X);
+                Canvas.SetTop(Control, _pos.Y);
+            }
         }
-
+        public Panel ParentPanel { get; private set; }
+        public UIElement Control { get; private set; }
+        
         public void InitControls(Panel panel, UIElement control)
         {
-            _parent = panel;
-            _control = control;
+            ParentPanel = panel;
+            Control = control;
         }
         public void Init()
         {
-            if (!_parent.Children.Contains(_control))
-                _parent.Children.Add(_control);
+            if (!ParentPanel.Children.Contains(Control))
+                ParentPanel.Children.Add(Control);
         }
     }
 }

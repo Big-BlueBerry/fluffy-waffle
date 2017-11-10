@@ -73,7 +73,7 @@ namespace fluffy_waffle
                 };
                 shape.SetCircle((Vector)pos, 30);
 
-                Neuron neuron = new Neuron(shape, board, 1, "test");
+                MouseEventHandleCompObject neuron = new MouseEventHandleCompObject(shape, board, "test");
                 neuron.AddComponent<ShapeDragComponent>().InitControls(canvas, shape);
                 neuron.InitAllComponents();
 
