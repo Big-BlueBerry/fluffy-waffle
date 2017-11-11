@@ -2,6 +2,6 @@
 {
     public interface ILeftMouseComponent : IComponent
     {
-        void LeftMouseDown(object sender, System.Windows.Input.MouseEventArgs e);
+        void LeftMouseUp(object sender, System.Windows.Input.MouseEventArgs e);
     }
 }

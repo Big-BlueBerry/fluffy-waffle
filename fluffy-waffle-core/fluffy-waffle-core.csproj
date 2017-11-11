@@ -52,6 +52,7 @@
     <Compile Include="Branch.cs" />
     <Compile Include="Component.cs" />
     <Compile Include="CompObject.cs" />
+    <Compile Include="Components\ColorableComponent.cs" />
     <Compile Include="IConnect.cs" />
     <Compile Include="IConnectable.cs" />
     <Compile Include="Components\ILeftMouseDragComponent.cs" />

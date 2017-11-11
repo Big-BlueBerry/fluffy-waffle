@@ -44,13 +44,13 @@ namespace fluffy_waffle_core.Components
             if (!_isClicked) return;
 
             var pos = e.GetPosition(ParentPanel);
-            SetPosition(pos - _firstPosition);
+            Canvas.SetLeft(Control, pos.X - _firstPosition.X);
+            Canvas.SetTop(Control, pos.Y - _firstPosition.Y);
         }
 
         public new void InitControls(Panel panel, UIElement control)
         {
-            ParentPanel = panel;
-            Control = control;
+            base.InitControls(panel, control);
             InitMouseControl();
         }
 

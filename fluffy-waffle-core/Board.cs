@@ -9,6 +9,7 @@ namespace fluffy_waffle_core
     public class Board
     {
         private List<CompObject> _compObjects;
+        public static NeuronComponent ClickedNeuron = null;
 
         public Board()
         {

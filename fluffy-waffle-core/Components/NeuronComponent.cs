@@ -5,10 +5,11 @@ using System.Windows.Controls;
 using System.Collections.Generic;
 using fluffy_waffle_core;
 using fluffy_waffle_core.Components;
+using System.Windows.Input;
 
 namespace fluffy_waffle_core
 {
-    public class NeuronComponent : ColorableComponent, IConnectable
+    public class NeuronComponent : ColorableComponent, IConnectable, ILeftMouseComponent
     {
         public double Value;
         public string Name;
@@ -25,9 +26,22 @@ namespace fluffy_waffle_core
         
         public void Connect(IConnectable target)
         {
-            SynapseComponent synapse = Parent.AddComponent<SynapseComponent>();
-            synapse.InitControls(ParentPanel, Control, this, target, 0);
-            ConnectList.Add(synapse);
+            if (target is IGroup)
+                throw new NotImplementedException();
+            else
+            {
+                Line line = new Line()
+                {
+                    X1 = this.Pos.X,
+                    Y1 = this.Pos.Y,
+                    X2 = ((NeuronComponent)target).Pos.X,
+                    Y2 = ((NeuronComponent)target).Pos.Y
+                };
+                
+                SynapseComponent synapse = Parent.AddComponent<SynapseComponent>();
+                synapse.InitControls(ParentPanel, line, this, target, 0);
+                ConnectList.Add(synapse);
+            }
         }
 
         public bool IsConnected(IConnectable target)
@@ -38,6 +52,17 @@ namespace fluffy_waffle_core
                     return true;
             }
             return false;
+        }
+
+        public void LeftMouseDown(object sender, MouseEventArgs e)
+        {
+            if (Board.ClickedNeuron == null)
+                Board.ClickedNeuron = this;
+            else
+            {
+                Connect(Board.ClickedNeuron);
+                Board.ClickedNeuron = null;
+            }
         }
     }
 }
