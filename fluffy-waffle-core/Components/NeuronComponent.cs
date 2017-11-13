@@ -14,8 +14,9 @@ namespace fluffy_waffle_core
     {
         public double Value;
         public string Name;
-        public List<IConnect> ConnectList = new List<IConnect>();
-    
+        public List<IConnect> ConnectList { get; set; }
+        public List<IConnect> ConnectedList { get; set; }
+
         public void InitControls(Panel panel, UIElement control, double value, String name)
         {
             base.InitControls(panel, control);
@@ -25,6 +26,12 @@ namespace fluffy_waffle_core
             Control.MouseLeftButtonDown += LeftMouseDown;
         }
         
+        public new void Init()
+        {
+            base.Init();
+            ConnectList = new List<IConnect>();
+            ConnectedList = new List<IConnect>();
+        }
         public void Connect(IConnectable target)
         {
             if (target is IGroup)
@@ -40,6 +47,7 @@ namespace fluffy_waffle_core
                 synapse.InitControls(ParentPanel, line, this, target, 0);
                 synapse.Init();
                 ConnectList.Add(synapse);
+                target.ConnectedList.Add(synapse);
             }
         }
 

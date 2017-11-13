@@ -8,6 +8,9 @@ namespace fluffy_waffle_core
 {
     public interface IConnectable : IComponent
     {
+        List<IConnect> ConnectList { get; set; }
+        List<IConnect> ConnectedList { get; set; }
+
         void Connect(IConnectable target);
         bool IsConnected(IConnectable target);
     }

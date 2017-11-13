@@ -39,11 +39,7 @@ namespace fluffy_waffle
             c.AddComponent<ShapeDragComponent>().InitControls(canvas, ellipse);
         }
 
-        public class MouseEventHandleCompObject : CompObject
-        {
-            public MouseEventHandleCompObject(Ellipse ellipse, Board board, string name) : base(ellipse, board, name)
-            {}
-        }
+        
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
@@ -85,6 +81,12 @@ namespace fluffy_waffle
                 _objectList.Add(neuron);
             }
         }
+    }
+
+    public class MouseEventHandleCompObject : CompObject
+    {
+        public MouseEventHandleCompObject(Ellipse ellipse, Board board, string name) : base(ellipse, board, name)
+        { }
     }
 }
 
