@@ -47,7 +47,5 @@ namespace fluffy_waffle_core
                 Weight = weight;
             Connect(from, to);
         }
-
-       
     }
 }

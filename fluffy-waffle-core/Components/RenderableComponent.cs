@@ -1,4 +1,5 @@
 ﻿using System.Windows;
+using System.Windows.Shapes;
 using System.Windows.Controls;
 
 namespace fluffy_waffle_core.Components

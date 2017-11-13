@@ -68,13 +68,18 @@ namespace fluffy_waffle
             {
                 Ellipse shape = new Ellipse()
                 {
+                    Width = 100,
+                    Height = 100,
                     Fill = Brushes.Aqua,
                     Stroke = Brushes.Black,
                 };
-                shape.SetCircle((Vector)pos, 30);
 
                 MouseEventHandleCompObject neuron = new MouseEventHandleCompObject(shape, board, "test");
                 neuron.AddComponent<ShapeDragComponent>().InitControls(canvas, shape);
+                NeuronComponent comp = neuron.AddComponent<NeuronComponent>();
+
+                comp.InitControls(canvas, shape, 0, "test");
+                comp.Pos = (Vector)pos;
                 neuron.InitAllComponents();
 
                 _objectList.Add(neuron);

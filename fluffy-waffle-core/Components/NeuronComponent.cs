@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Windows;
+using System.Windows.Media;
 using System.Windows.Shapes;
 using System.Windows.Controls;
 using System.Collections.Generic;
@@ -14,14 +15,14 @@ namespace fluffy_waffle_core
         public double Value;
         public string Name;
         public List<IConnect> ConnectList = new List<IConnect>();
-
-        CompObject IComponent.Parent { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
     
         public void InitControls(Panel panel, UIElement control, double value, String name)
         {
             base.InitControls(panel, control);
             Value = value;
             Name = name;
+
+            Control.MouseLeftButtonDown += LeftMouseDown;
         }
         
         public void Connect(IConnectable target)
@@ -32,14 +33,12 @@ namespace fluffy_waffle_core
             {
                 Line line = new Line()
                 {
-                    X1 = this.Pos.X,
-                    Y1 = this.Pos.Y,
-                    X2 = ((NeuronComponent)target).Pos.X,
-                    Y2 = ((NeuronComponent)target).Pos.Y
+                    Stroke = Brushes.Black
                 };
                 
                 SynapseComponent synapse = Parent.AddComponent<SynapseComponent>();
                 synapse.InitControls(ParentPanel, line, this, target, 0);
+                synapse.Init();
                 ConnectList.Add(synapse);
             }
         }

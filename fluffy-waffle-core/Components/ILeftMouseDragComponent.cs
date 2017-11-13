@@ -11,14 +11,14 @@ using MouseEventArgs = System.Windows.Input.MouseEventArgs;
 
 namespace fluffy_waffle_core.Components
 {
-    public interface ILeftDragableComponent : ILeftMouseComponent
+    public interface ILeftMouseDragComponent : ILeftMouseComponent
     {
         void LeftMouseUp(object sender, MouseEventArgs e);
         void MouseLeave(object sender, MouseEventArgs e);
         void MouseMove(object sender, MouseEventArgs e);
     }
 
-    public class ShapeDragComponent : RenderableComponent, ILeftDragableComponent
+    public class ShapeDragComponent : RenderableComponent, ILeftMouseComponent
     {
         private bool _isClicked;
         private Point _firstPosition;
@@ -44,8 +44,7 @@ namespace fluffy_waffle_core.Components
             if (!_isClicked) return;
 
             var pos = e.GetPosition(ParentPanel);
-            Canvas.SetLeft(Control, pos.X - _firstPosition.X);
-            Canvas.SetTop(Control, pos.Y - _firstPosition.Y);
+            Pos = (Vector)pos;
         }
 
         public new void InitControls(Panel panel, UIElement control)
