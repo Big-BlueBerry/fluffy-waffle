@@ -22,15 +22,14 @@ namespace fluffy_waffle_core
             base.InitControls(panel, control);
             Value = value;
             Name = name;
-
-            Control.MouseLeftButtonDown += LeftMouseDown;
+            ConnectList = new List<IConnect>();
+            ConnectedList = new List<IConnect>();
         }
-        
+
         public new void Init()
         {
             base.Init();
-            ConnectList = new List<IConnect>();
-            ConnectedList = new List<IConnect>();
+            Control.MouseLeftButtonDown += LeftMouseDown;
         }
         public void Connect(IConnectable target)
         {
@@ -56,6 +55,11 @@ namespace fluffy_waffle_core
             foreach(IConnect connection in ConnectList)
             {
                 if (connection.To == target)
+                    return true;
+            }
+            foreach (IConnect connection in ConnectedList)
+            {
+                if (connection.From == target)
                     return true;
             }
             return false;

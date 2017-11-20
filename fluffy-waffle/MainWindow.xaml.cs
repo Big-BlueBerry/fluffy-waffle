@@ -30,13 +30,6 @@ namespace fluffy_waffle
 
             board = new Board();
             _objectList = new List<CompObject>();
-
-            // before
-            //var c = new MouseEventHandleCompObject(ellipse, board, "뀨");
-            //c.AddComponent<ShapeRandomMoveSexComponent>().InitControls(canvas, ellipse);
-
-            var c = new MouseEventHandleCompObject(ellipse, board, "의읭ㅇㅇ");
-            c.AddComponent<ShapeDragComponent>().InitControls(canvas, ellipse);
         }
 
         
@@ -74,7 +67,7 @@ namespace fluffy_waffle
                 neuron.AddComponent<ShapeDragComponent>().InitControls(canvas, shape);
                 NeuronComponent comp = neuron.AddComponent<NeuronComponent>();
 
-                comp.InitControls(canvas, shape, 0, "test");
+                comp.InitControls(canvas, shape, 1, "test");
                 comp.Pos = (Vector)pos;
                 neuron.InitAllComponents();
 

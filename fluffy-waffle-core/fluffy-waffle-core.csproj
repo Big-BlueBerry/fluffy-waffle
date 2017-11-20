@@ -53,6 +53,8 @@
     <Compile Include="Component.cs" />
     <Compile Include="CompObject.cs" />
     <Compile Include="Components\ColorableComponent.cs" />
+    <Compile Include="Components\IRightMouseComponent.cs" />
+    <Compile Include="Components\StepComponent.cs" />
     <Compile Include="IConnect.cs" />
     <Compile Include="IConnectable.cs" />
     <Compile Include="Components\ILeftMouseDragComponent.cs" />
